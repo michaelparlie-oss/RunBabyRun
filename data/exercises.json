@@ -1,0 +1,588 @@
+{
+ "glute_bridge": {
+  "name": "Glute bridge",
+  "category": "warm-up",
+  "equipment": "mat",
+  "purpose": "Wakes up the glutes before lifting or running.",
+  "how": [
+   "Lie on your back, knees bent, feet flat hip-width apart.",
+   "Push through your heels and lift your hips until knees, hips and shoulders line up.",
+   "Hold 1 s at the top, lower slowly."
+  ],
+  "cues": [
+   "Squeeze glutes, not lower back",
+   "Ribs down"
+  ],
+  "mistakes": [
+   "Arching the lower back",
+   "Pushing through toes"
+  ],
+  "start": "Bodyweight",
+  "progress": "Single-leg bridge",
+  "easier": "Smaller range",
+  "harder": "Single-leg or banded"
+ },
+ "lateral_walk": {
+  "name": "Banded lateral walk",
+  "category": "warm-up",
+  "equipment": "mini band",
+  "purpose": "Activates the side-hip muscles (gluteus medius) that keep the knee tracking straight.",
+  "how": [
+   "Mini band just above the knees or around the ankles.",
+   "Quarter-squat, feet hip-width.",
+   "Step sideways 10 steps, then back the other way."
+  ],
+  "cues": [
+   "Toes forward",
+   "Keep tension on the band the whole time"
+  ],
+  "mistakes": [
+   "Leaning the torso",
+   "Feet snapping together"
+  ],
+  "start": "Light band",
+  "progress": "Heavier band",
+  "easier": "Band above knees",
+  "harder": "Band at ankles"
+ },
+ "goblet_squat": {
+  "name": "Goblet squat",
+  "category": "squat",
+  "equipment": "dumbbell or kettlebell",
+  "purpose": "Teaches the squat pattern and builds quads and glutes, which protect the knee.",
+  "how": [
+   "Hold one dumbbell vertically against your chest, elbows down.",
+   "Feet shoulder-width, toes slightly out.",
+   "Sit down between your heels as deep as is pain-free, chest up.",
+   "Drive up through the whole foot."
+  ],
+  "cues": [
+   "Knees follow the toes",
+   "Elbows inside the knees at the bottom",
+   "2 s down, 1 s up"
+  ],
+  "mistakes": [
+   "Knees caving in",
+   "Heels lifting",
+   "Rounding the back"
+  ],
+  "start": "8–12 kg for men new to lifting; choose a weight you could lift 10–12 times when 6–8 are prescribed",
+  "progress": "+2 kg when all sets feel RPE 7 or easier.",
+  "easier": "Box squat to a bench",
+  "harder": "Back squat"
+ },
+ "back_squat": {
+  "name": "Back squat",
+  "category": "squat",
+  "equipment": "barbell + rack",
+  "purpose": "Main lower-body strength lift for running economy and knee resilience.",
+  "how": [
+   "Bar on the upper back (not the neck) in a rack at chest height.",
+   "Step back 2 steps, feet shoulder-width.",
+   "Brace your stomach, sit down and back to at least thighs parallel if pain-free.",
+   "Drive up, keeping chest and hips rising together."
+  ],
+  "cues": [
+   "Big breath and brace before each rep",
+   "Knees track over toes",
+   "Whole foot pressure"
+  ],
+  "mistakes": [
+   "Good-morning (hips shoot up first)",
+   "Knees caving",
+   "Bouncing at the bottom"
+  ],
+  "start": "Empty bar (20 kg) for 2 warm-up sets, then add 5–10 kg per set until RPE 7",
+  "progress": "+2.5–5 kg per week when all reps hit at target RPE",
+  "easier": "Goblet squat",
+  "harder": "Pause squat (2 s at bottom)"
+ },
+ "rdl": {
+  "name": "Romanian deadlift (RDL)",
+  "category": "hinge",
+  "equipment": "barbell or dumbbells",
+  "purpose": "Strengthens hamstrings and glutes, the engine for uphill and late-race running.",
+  "how": [
+   "Stand tall holding the bar at the hips, soft knees.",
+   "Push hips back, sliding the bar down the thighs, back flat.",
+   "Stop when you feel a strong hamstring stretch (usually just below the knee).",
+   "Squeeze glutes to stand up."
+  ],
+  "cues": [
+   "Hips go back, not down",
+   "Bar stays touching the legs",
+   "Neutral neck"
+  ],
+  "mistakes": [
+   "Rounding the back",
+   "Turning it into a squat",
+   "Going too low"
+  ],
+  "start": "20–30 kg barbell or 2×10 kg dumbbells",
+  "progress": "+2.5–5 kg when reps are smooth at target RPE",
+  "easier": "Dumbbell RDL",
+  "harder": "Single-leg RDL with weight"
+ },
+ "trap_bar_dl": {
+  "name": "Trap-bar deadlift",
+  "category": "hinge",
+  "equipment": "trap (hex) bar",
+  "purpose": "Heavy whole-body pull that is easier on the back than a straight-bar deadlift.",
+  "how": [
+   "Stand in the middle of the bar, feet hip-width.",
+   "Hinge and grip the handles, hips between knees and shoulders.",
+   "Brace, then push the floor away to stand tall.",
+   "Lower under control."
+  ],
+  "cues": [
+   "Push the floor away",
+   "Chest up, back flat",
+   "Lock out with glutes, don't lean back"
+  ],
+  "mistakes": [
+   "Jerking the bar",
+   "Hips rising first",
+   "Leaning back at the top"
+  ],
+  "start": "Bar alone (often 20–25 kg) plus 10–20 kg",
+  "progress": "+5 kg when all sets are at target RPE",
+  "easier": "Kettlebell deadlift",
+  "harder": "Heavier sets of 3–5"
+ },
+ "split_squat": {
+  "name": "Bulgarian split squat",
+  "category": "single-leg",
+  "equipment": "bench + dumbbells",
+  "purpose": "Single-leg strength and balance; trains each leg like running does.",
+  "how": [
+   "Stand about 2 steps in front of a bench, rear foot laces-down on the bench.",
+   "Lower straight down until the front thigh is about parallel.",
+   "Push through the front heel to stand.",
+   "Finish all reps on one leg, then switch."
+  ],
+  "cues": [
+   "Front knee over the 2nd–3rd toe",
+   "Torso slightly forward",
+   "Most weight on the front leg"
+  ],
+  "mistakes": [
+   "Front foot too close",
+   "Knee caving",
+   "Pushing off the back foot"
+  ],
+  "start": "Bodyweight for the first session, then 2×6–8 kg dumbbells",
+  "progress": "+2 kg per hand when all reps are at target RPE",
+  "easier": "Static split squat (back foot on floor) or step-up",
+  "harder": "Heavier dumbbells; 3 s lowering"
+ },
+ "step_up": {
+  "name": "Step-up",
+  "category": "single-leg",
+  "equipment": "box 30–45 cm + dumbbells",
+  "purpose": "Knee-friendly single-leg strength; a good swap when split squats irritate the knee.",
+  "how": [
+   "Put one whole foot on a box (knee about 90°).",
+   "Drive through that foot to stand on the box; the back leg only follows.",
+   "Lower slowly with the same leg."
+  ],
+  "cues": [
+   "Don't push off the floor leg",
+   "Knee tracks over toes",
+   "Stand tall at the top"
+  ],
+  "mistakes": [
+   "Bouncing off the bottom foot",
+   "Box too high"
+  ],
+  "start": "Bodyweight, 30 cm box",
+  "progress": "Add dumbbells, then a higher box",
+  "easier": "Lower box",
+  "harder": "Heavier dumbbells, 45 cm box"
+ },
+ "sl_rdl": {
+  "name": "Single-leg RDL",
+  "category": "single-leg hinge",
+  "equipment": "dumbbell or kettlebell",
+  "purpose": "Hamstring strength plus ankle and hip stability on one leg.",
+  "how": [
+   "Stand on one leg, soft knee, weight in the opposite hand.",
+   "Hinge forward as the free leg goes straight back.",
+   "Stop when the torso is near parallel or balance breaks; return."
+  ],
+  "cues": [
+   "Hips square to the floor",
+   "Back flat",
+   "Slow and controlled"
+  ],
+  "mistakes": [
+   "Hip rotating open",
+   "Rounding the back"
+  ],
+  "start": "Bodyweight, fingertips on a wall for balance",
+  "progress": "Add 6–12 kg",
+  "easier": "Kickstand RDL (back toe touching floor)",
+  "harder": "Heavier weight"
+ },
+ "hip_thrust": {
+  "name": "Hip thrust",
+  "category": "glute",
+  "equipment": "bench + barbell (pad) or dumbbell",
+  "purpose": "Builds glute strength for hip extension and pelvic control late in long runs.",
+  "how": [
+   "Upper back on a bench, bar across the hips with a pad.",
+   "Feet flat, shins vertical at the top.",
+   "Drive hips up to a straight line from knees to shoulders; pause 1 s; lower."
+  ],
+  "cues": [
+   "Chin tucked",
+   "Ribs down",
+   "Squeeze glutes at the top"
+  ],
+  "mistakes": [
+   "Arching the back",
+   "Feet too far out"
+  ],
+  "start": "Bodyweight, then 20–40 kg",
+  "progress": "+5–10 kg when all reps are at target RPE",
+  "easier": "Glute bridge",
+  "harder": "Single-leg hip thrust"
+ },
+ "calf_standing": {
+  "name": "Standing calf raise (straight knee)",
+  "category": "calf",
+  "equipment": "step or calf machine",
+  "purpose": "Strengthens the gastrocnemius and Achilles, which take several times body weight each running step.",
+  "how": [
+   "Balls of feet on a step, heels hanging off.",
+   "Rise as high as possible, pause 1 s.",
+   "Lower for 3 s to a full stretch."
+  ],
+  "cues": [
+   "Straight knees",
+   "Full range",
+   "Push through the big toe"
+  ],
+  "mistakes": [
+   "Bouncing",
+   "Half reps"
+  ],
+  "start": "Bodyweight on both legs, then single-leg",
+  "progress": "Single-leg holding a dumbbell; then machine with load",
+  "easier": "Both legs, flat floor",
+  "harder": "Single-leg with 10–20 kg"
+ },
+ "calf_seated": {
+  "name": "Seated calf raise (bent knee)",
+  "category": "calf",
+  "equipment": "seated calf machine, or sit with a dumbbell or backpack on the knees",
+  "purpose": "Targets the soleus, the calf muscle that does most of the work in endurance running.",
+  "how": [
+   "Sit with knees at 90°, balls of feet on a plate or step, weight on the knees.",
+   "Raise heels as high as possible, pause.",
+   "Lower slowly to a stretch."
+  ],
+  "cues": [
+   "Slow lowering",
+   "Full range"
+  ],
+  "mistakes": [
+   "Too heavy, tiny range"
+  ],
+  "start": "20 kg",
+  "progress": "+5 kg when 15 reps feel easy",
+  "easier": "Lighter load",
+  "harder": "Heavier, 3 s lowering"
+ },
+ "hip_abduction": {
+  "name": "Hip abduction (cable or side-lying)",
+  "category": "hip",
+  "equipment": "cable machine, band or mat",
+  "purpose": "Strengthens the side hip, which helps keep the knee tracking straight.",
+  "how": [
+   "Cable: ankle strap on the far leg, stand side-on, lift the leg out to the side 30–40°, slowly return.",
+   "Side-lying option: lie on your side, top leg straight and slightly back, lift with heel leading."
+  ],
+  "cues": [
+   "Toes forward, heel leads",
+   "Don't lean the torso"
+  ],
+  "mistakes": [
+   "Swinging",
+   "Rolling the hip back"
+  ],
+  "start": "Bodyweight side-lying or lightest cable plate",
+  "progress": "Add ankle weight or cable load",
+  "easier": "Banded clams",
+  "harder": "Heavier cable, 2 s hold at top"
+ },
+ "tibialis_raise": {
+  "name": "Tibialis raise",
+  "category": "shin",
+  "equipment": "wall",
+  "purpose": "Strengthens the front of the shin for downhill running and shin-splint resistance.",
+  "how": [
+   "Lean your back against a wall, heels about 30 cm from it.",
+   "Lift your toes as high as possible, keeping heels down.",
+   "Lower slowly."
+  ],
+  "cues": [
+   "Heels stay down",
+   "Full range"
+  ],
+  "mistakes": [
+   "Rushing"
+  ],
+  "start": "Bodyweight",
+  "progress": "Feet further from the wall",
+  "easier": "Feet closer",
+  "harder": "Tib bar or plate on feet"
+ },
+ "dead_bug": {
+  "name": "Dead bug",
+  "category": "core",
+  "equipment": "mat",
+  "purpose": "Teaches the core to stay stable while the arms and legs move, as in running.",
+  "how": [
+   "Lie on your back, arms up, hips and knees at 90°.",
+   "Press the lower back gently into the floor.",
+   "Slowly extend the opposite arm and leg, exhale, return; switch sides."
+  ],
+  "cues": [
+   "Low back stays down",
+   "Move slowly"
+  ],
+  "mistakes": [
+   "Back arching off the floor",
+   "Holding breath"
+  ],
+  "start": "Bodyweight",
+  "progress": "Hold a light plate overhead",
+  "easier": "Move legs only",
+  "harder": "Slower, 3 s each way"
+ },
+ "side_plank": {
+  "name": "Side plank",
+  "category": "core",
+  "equipment": "mat",
+  "purpose": "Strengthens the side core and hips that stop the pelvis dropping each stride.",
+  "how": [
+   "Lie on your side, elbow under the shoulder.",
+   "Lift hips so ankles, hips and shoulders form a straight line.",
+   "Hold, breathing normally."
+  ],
+  "cues": [
+   "Hips forward and up",
+   "Head in line"
+  ],
+  "mistakes": [
+   "Hips sagging",
+   "Rolling forward"
+  ],
+  "start": "Knees bent version if a full one can't be held 20 s",
+  "progress": "+10 s per week",
+  "easier": "Knees on floor",
+  "harder": "Top leg raised"
+ },
+ "copenhagen": {
+  "name": "Copenhagen plank",
+  "category": "core / adductor",
+  "equipment": "bench",
+  "purpose": "Strengthens the inner thigh (adductors), which stabilise the knee and pelvis.",
+  "how": [
+   "Side plank with your top leg resting on a bench (knee on the bench for the beginner version).",
+   "Lift your hips and the bottom leg so the body is straight.",
+   "Hold, then switch sides."
+  ],
+  "cues": [
+   "Straight line",
+   "Squeeze the top leg into the bench"
+  ],
+  "mistakes": [
+   "Hips sagging"
+  ],
+  "start": "Short lever (knee on bench), 10–15 s",
+  "progress": "Long lever (ankle on bench)",
+  "easier": "Short lever",
+  "harder": "Long lever, longer holds"
+ },
+ "pallof": {
+  "name": "Pallof press",
+  "category": "core (anti-rotation)",
+  "equipment": "cable or band",
+  "purpose": "Trains the trunk to resist twisting, which keeps running form tidy when tired.",
+  "how": [
+   "Stand side-on to a cable at chest height, handle at your chest.",
+   "Brace, press the handle straight out, hold 2 s, return.",
+   "Finish reps, then face the other way."
+  ],
+  "cues": [
+   "Don't let the cable rotate you",
+   "Hips square"
+  ],
+  "mistakes": [
+   "Leaning away",
+   "Too heavy"
+  ],
+  "start": "Light cable or band",
+  "progress": "Step further away or add load",
+  "easier": "Kneeling version",
+  "harder": "Split stance, more load"
+ },
+ "foot_drills": {
+  "name": "Toe spreads + short-foot hold",
+  "category": "foot",
+  "equipment": "none (barefoot)",
+  "purpose": "Strengthens the small muscles of the foot and arch.",
+  "how": [
+   "Toe spreads: sitting barefoot, spread all toes as wide as possible, hold 3 s, relax.",
+   "Short foot: shorten the foot by gently lifting the arch without curling the toes; hold 10 s."
+  ],
+  "cues": [
+   "Big toe stays on the floor",
+   "No toe curling"
+  ],
+  "mistakes": [
+   "Gripping with toes"
+  ],
+  "start": "Seated",
+  "progress": "Standing, then single-leg",
+  "easier": "Seated, smaller holds",
+  "harder": "Single-leg balance with short foot"
+ },
+ "pogo": {
+  "name": "Pogo hops",
+  "category": "plyometric",
+  "equipment": "none",
+  "purpose": "Teaches stiff, springy ankles that return energy, which improves running economy.",
+  "how": [
+   "Stand tall, small knee bend.",
+   "Bounce quickly on the balls of your feet, ankles doing the work, 2–5 cm off the floor.",
+   "Stay light and quiet."
+  ],
+  "cues": [
+   "Fast ground contact",
+   "Quiet landings",
+   "Tall posture"
+  ],
+  "mistakes": [
+   "Big knee bend",
+   "Heels slamming"
+  ],
+  "start": "2×10",
+  "progress": "2×20 → 3×20",
+  "easier": "Skipping rope easy",
+  "harder": "Single-leg pogos"
+ },
+ "a_skip": {
+  "name": "A-skip",
+  "category": "drill / plyometric",
+  "equipment": "flat 20 m",
+  "purpose": "Running-form drill: knee lift, foot strike under the hip.",
+  "how": [
+   "Skip forward, driving one knee to hip height while the other foot strikes down under the hip.",
+   "Swing arms in rhythm. Cover 20 m."
+  ],
+  "cues": [
+   "Foot lands under the hip",
+   "Tall"
+  ],
+  "mistakes": [
+   "Leaning back",
+   "Overstriding"
+  ],
+  "start": "2×20 m",
+  "progress": "3×20 m",
+  "easier": "Marching A",
+  "harder": "Faster rhythm"
+ },
+ "box_jump": {
+  "name": "Low box jump",
+  "category": "plyometric",
+  "equipment": "box 30–40 cm",
+  "purpose": "Builds explosive leg power with a soft landing (low impact because you step down).",
+  "how": [
+   "Stand 30 cm from the box.",
+   "Swing arms, jump onto the box, land softly in a quarter-squat.",
+   "Stand up, then STEP down (don't jump down)."
+  ],
+  "cues": [
+   "Land quietly",
+   "Knees over toes on landing"
+  ],
+  "mistakes": [
+   "Box too high",
+   "Jumping down"
+  ],
+  "start": "30 cm box, 3×4",
+  "progress": "4×5, then 40 cm",
+  "easier": "Squat jump onto the floor",
+  "harder": "40–50 cm box"
+ },
+ "bounds": {
+  "name": "Bounding",
+  "category": "plyometric",
+  "equipment": "flat 20–30 m",
+  "purpose": "Exaggerated running strides for power and elastic stiffness.",
+  "how": [
+   "From a jog, push off powerfully into long, high strides, hang in the air, land under the hips.",
+   "20–30 m, walk back."
+  ],
+  "cues": [
+   "Push the ground behind you",
+   "Tall posture"
+  ],
+  "mistakes": [
+   "Overstriding / heel landing"
+  ],
+  "start": "3×20 m",
+  "progress": "3×30 m",
+  "easier": "Skipping for height",
+  "harder": "Longer distance"
+ },
+ "bw_squat": {
+  "name": "Bodyweight squat",
+  "category": "squat",
+  "equipment": "none",
+  "purpose": "Teaches the squat pattern and builds the quads and glutes that protect the knee.",
+  "how": [
+   "Feet shoulder-width, toes slightly out, arms forward for balance.",
+   "Sit down and back as deep as is pain-free, chest up.",
+   "Drive up through the whole foot."
+  ],
+  "cues": [
+   "Knees follow the toes",
+   "2 s down, 1 s up"
+  ],
+  "mistakes": [
+   "Knees caving in",
+   "Heels lifting"
+  ],
+  "start": "Bodyweight",
+  "progress": "Slow the lowering to 3 s, then hold a backpack with books",
+  "easier": "Sit to a chair and stand",
+  "harder": "Backpack load or 3 s lowering"
+ },
+ "squat_jump": {
+  "name": "Squat jump",
+  "category": "plyometric",
+  "equipment": "none",
+  "purpose": "Builds explosive leg power without equipment.",
+  "how": [
+   "Quarter-squat with arms back.",
+   "Jump straight up, swinging the arms.",
+   "Land softly on the balls of the feet, then heels, knees bent. Reset before the next jump."
+  ],
+  "cues": [
+   "Land quietly",
+   "Knees over toes on landing"
+  ],
+  "mistakes": [
+   "Stiff, loud landings",
+   "Rushing between jumps"
+  ],
+  "start": "3×4",
+  "progress": "4×5",
+  "easier": "Fast bodyweight squat without leaving the floor",
+  "harder": "Tuck the knees slightly"
+ }
+}
