@@ -34,7 +34,7 @@ export const SPEC: Record<RaceKey, Spec> = {
   "5k": { minWeeks: 6, taper: [], taperLong: [], raceWeekFrac: 0.5, peak: { new: 25, regular: 40, experienced: 55 }, longPeak: { new: 10, regular: 12, experienced: 14 }, longUsual: 8, longMin: 5, longShare: 0.42, longMaxMin: 90, longStep: 1, qMax: 10 },
   "10k": { minWeeks: 8, taper: [0.8], taperLong: [0.75], raceWeekFrac: 0.45, peak: { new: 30, regular: 45, experienced: 60 }, longPeak: { new: 12, regular: 16, experienced: 18 }, longUsual: 11, longMin: 6, longShare: 0.45, longMaxMin: 110, longStep: 1, qMax: 12 },
   hm: { minWeeks: 10, taper: [0.7], taperLong: [0.6], raceWeekFrac: 0.35, peak: { new: 35, regular: 50, experienced: 65 }, longPeak: { new: 18, regular: 20, experienced: 22 }, longUsual: 16, longMin: 8, longShare: 0.5, longMaxMin: 150, longStep: 2, qMax: 14 },
-  fm: { minWeeks: 16, taper: [0.75, 0.6], taperLong: [0.65, 0.45], raceWeekFrac: 0.3, peak: { new: 50, regular: 65, experienced: 85 }, longPeak: { new: 28, regular: 30, experienced: 32 }, longUsual: 26, longMin: 10, longShare: 0.65, longMaxMin: 210, longStep: 2, qMax: 16 },
+  fm: { minWeeks: 16, taper: [0.75, 0.6], taperLong: [0.65, 0.45], raceWeekFrac: 0.3, peak: { new: 50, regular: 65, experienced: 85 }, longPeak: { new: 28, regular: 30, experienced: 32 }, longUsual: 26, longMin: 10, longShare: 0.55, longMaxMin: 210, longStep: 2, qMax: 16 },
 };
 const DAYS_FACTOR: Record<number, number> = { 3: 0.8, 4: 0.9, 5: 1, 6: 1.1 };
 export const MIN_WEEKS_HARD = 3;
