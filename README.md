@@ -45,11 +45,10 @@ Check Strava's current API terms, rate limits and athlete-capacity process befor
 
 Each runner's data is a handful of JSON documents keyed by their Strava athlete id (`lib/storage`):
 
-- **Netlify Database (Postgres)** when the site has one (`NETLIFY_DB_URL`); the table is created by the migration in
-  `netlify/database/migrations`.
-- **Netlify Blobs** otherwise. Works with no setup. Fine for a small number of runners; move to the database before a
-  large public launch.
+- **Netlify Blobs** in production. No setup and no extra cost. Suitable while the number of runners is modest.
 - **Files in `.data/`** for local development.
+- `docs/netlify-database.md` describes how to move to **Netlify Database (Postgres)**, which costs credits, when the
+  site grows.
 
 ## Local development
 
@@ -88,7 +87,7 @@ python3 scripts/smoke.py http://127.0.0.1:3111 $(date +%F)
 - [ ] Have the Terms and Privacy pages reviewed for your jurisdiction. They are plain-language drafts, not legal advice.
       The app stores health-related answers, which many privacy laws treat as sensitive data.
 - [ ] Set `SESSION_SECRET` and `CONTACT_EMAIL`.
-- [ ] Decide on storage (Netlify Database for scale).
+- [ ] Decide on storage for scale (`docs/netlify-database.md`).
 
 ## Not medical advice
 

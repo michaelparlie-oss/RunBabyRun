@@ -43,8 +43,10 @@ to recreational runners; a reference run taken from Strava training data underst
 
 ## Technical
 
-- **Document store, not relational tables.** A runner's whole state is five small JSON documents. One interface, four
-  backends (Netlify Database, Netlify Blobs, files, memory).
+- **Document store, not relational tables.** A runner's whole state is five small JSON documents behind one interface
+  (Netlify Blobs in production, files locally, memory in tests). Netlify's own guidance prefers a database for per-user
+  data; Blobs was chosen for launch because Netlify Database consumes paid credits and is provisioned automatically as
+  soon as its package is installed. The Postgres backend is ready in `docs/netlify-database.md`.
 - **Strava calls are minimal.** Opening the app lists new activities (1–2 calls, at most every 30 minutes). Laps and
   streams are fetched only when a matched run is opened, once, then stored. Rate-limit responses pause syncing instead of
   retrying inside a serverless request.

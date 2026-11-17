@@ -4,8 +4,9 @@ import path from "node:path";
 /**
  * Per-runner document store. Every key belongs to exactly one owner (a Strava athlete id, or "sys");
  * callers pass the owner from the verified session, never from user input.
- * Backends: Netlify Database (Postgres) when NETLIFY_DB_URL is set, Netlify Blobs on Netlify without
- * a database, and JSON files in .data/ for local development. Tests use the in-memory store.
+ * Backends: Netlify Blobs on Netlify (no setup, no extra cost) and JSON files in .data/ for local
+ * development. Tests use the in-memory store. docs/netlify-database.md has a Postgres backend to
+ * switch to when the number of runners grows.
  */
 export interface DocStore {
   kind: string;
@@ -64,35 +65,12 @@ async function blobStore(): Promise<DocStore> {
   };
 }
 
-async function pgStore(): Promise<DocStore> {
-  const { getDatabase } = await import("@netlify/database");
-  const db = getDatabase();
-  return {
-    kind: "netlify-database",
-    async get(o, key) { check(o, key); const r = await db.sql<{ value: unknown }>`SELECT value FROM doc WHERE owner = ${o} AND key = ${key}`; return r.length ? (r[0].value as never) : null; },
-    async set(o, key, value) {
-      check(o, key);
-      const v = JSON.stringify(value);
-      await db.sql`INSERT INTO doc (owner, key, value) VALUES (${o}, ${key}, ${v}::jsonb) ON CONFLICT (owner, key) DO UPDATE SET value = EXCLUDED.value, updated_at = now()`;
-    },
-    async setIfNew(o, key, value) {
-      check(o, key);
-      const v = JSON.stringify(value);
-      const r = await db.sql<{ key: string }>`INSERT INTO doc (owner, key, value) VALUES (${o}, ${key}, ${v}::jsonb) ON CONFLICT (owner, key) DO NOTHING RETURNING key`;
-      return r.length > 0;
-    },
-    async del(o, key) { check(o, key); await db.sql`DELETE FROM doc WHERE owner = ${o} AND key = ${key}`; },
-    async delAll(o) { check(o, "x"); await db.sql`DELETE FROM doc WHERE owner = ${o}`; },
-  };
-}
-
 const g = globalThis as unknown as { __rbrStore?: Promise<DocStore> };
 export function setStoreForTests(s: DocStore | null) { g.__rbrStore = s ? Promise.resolve(s) : undefined; }
 
 export function getStore(): Promise<DocStore> {
   if (!g.__rbrStore) {
     g.__rbrStore = (async () => {
-      if (process.env.NETLIFY_DB_URL && process.env.STORAGE !== "blobs") return pgStore();
       const onNetlify = process.env.NETLIFY || process.env.NETLIFY_BLOBS_CONTEXT || process.env.SITE_ID || process.env.DEPLOY_ID || process.env.AWS_LAMBDA_FUNCTION_NAME;
       if (onNetlify || process.env.STORAGE === "blobs") return blobStore();
       return fileStore();
