@@ -5,7 +5,7 @@ import { Bar, BarChart, CartesianGrid, Cell, ComposedChart, Line, LineChart, Ref
 const mmss = (s: number) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}`;
 const axis = { tickLine: false, axisLine: false } as const;
 const GRID = <CartesianGrid vertical={false} stroke="var(--color-grid)" />;
-const box = "border border-line-strong bg-white px-2.5 py-1.5 text-xs tnum";
+const box = "border border-line-strong bg-white px-3 py-2 text-sm tnum";
 const A = { isAnimationActive: false } as const; // these redraw on every live refresh: no replayed animation
 
 export interface RunPoint { day: number; label: string; pace: number; trend: number | null; hr: number | null; km: number; recent: boolean }
@@ -15,7 +15,7 @@ export function PaceTrend({ runs }: { runs: RunPoint[] }) {
   const ticks = runs.length ? [runs[0].day, runs[Math.floor(runs.length / 2)].day, runs[runs.length - 1].day] : [];
   const lab = new Map(runs.map((r) => [r.day, r.label]));
   return (
-    <div className="h-60 w-full">
+    <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={runs} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
           {GRID}
@@ -34,11 +34,11 @@ export function PaceTrend({ runs }: { runs: RunPoint[] }) {
 export function PaceHeart({ runs }: { runs: RunPoint[] }) {
   const pts = runs.filter((r) => r.hr);
   return (
-    <div className="h-60 w-full">
+    <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <ScatterChart margin={{ top: 8, right: 8, bottom: 16, left: 0 }}>
           <CartesianGrid stroke="var(--color-grid)" />
-          <XAxis dataKey="hr" type="number" domain={["dataMin - 3", "dataMax + 3"]} tickFormatter={(v: number) => `${Math.round(v)}`} label={{ value: "average heart rate (bpm)", position: "insideBottom", offset: -8, fontSize: 12, fill: "var(--color-axis)" }} {...axis} />
+          <XAxis dataKey="hr" type="number" domain={["dataMin - 3", "dataMax + 3"]} tickFormatter={(v: number) => `${Math.round(v)}`} label={{ value: "average heart rate (bpm)", position: "insideBottom", offset: -8, fontSize: 13, fill: "var(--color-axis)" }} {...axis} />
           <YAxis dataKey="pace" type="number" reversed domain={["dataMin - 10", "dataMax + 10"]} tickFormatter={mmss} width={40} {...axis} />
           <ZAxis dataKey="km" range={[30, 220]} />
           <Tooltip content={({ active, payload }) => { const r = payload?.[0]?.payload as RunPoint | undefined; return active && r ? <div className={box}><b>{r.label}</b><br />{mmss(r.pace)} /km at {Math.round(r.hr!)} bpm, {r.km.toFixed(1)} km</div> : null; }} />
@@ -55,7 +55,7 @@ export interface WeekPoint { label: string; km: number; longest: number; ratio: 
 /** Last 7 days against the average week of the last 28, for each of the past twelve weeks. */
 export function LoadRatio({ weeks }: { weeks: WeekPoint[] }) {
   return (
-    <div className="h-52 w-full">
+    <div className="h-60 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={weeks} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
           {GRID}
@@ -74,7 +74,7 @@ export function LoadRatio({ weeks }: { weeks: WeekPoint[] }) {
 /** Weekly distance as bars with the longest single run marked inside each bar. */
 export function VolumeBars({ weeks }: { weeks: WeekPoint[] }) {
   return (
-    <div className="h-52 w-full">
+    <div className="h-60 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={weeks} margin={{ top: 8, right: 8, bottom: 0, left: 0 }} barGap={-22}>
           {GRID}
@@ -93,7 +93,7 @@ export interface Bucket { label: string; n: number; mid: boolean }
 /** How many runs fall in each pace band. */
 export function PaceBands({ buckets }: { buckets: Bucket[] }) {
   return (
-    <div className="h-52 w-full">
+    <div className="h-60 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={buckets} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
           {GRID}

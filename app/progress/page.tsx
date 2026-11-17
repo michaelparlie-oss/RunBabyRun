@@ -57,9 +57,9 @@ export default async function ProgressPage() {
   const sessionOf = new Map([...c.actFor.entries()].map(([sid, a]) => [a.id, c.sessions.find((s) => s.id === sid)]));
   const Stat = ({ label, value, unit, sub, tint }: { label: string; value: React.ReactNode; unit?: string; sub?: string; tint?: string }) => (
     <div className="stat" style={tint ? { ["--tint" as string]: tint } : undefined}>
-      <div className="text-xs font-semibold text-ink-2">{label}</div>
-      <div className="numeral mt-0.5">{value}{unit && <span className="ml-1 font-sans text-xs font-semibold text-ink-2">{unit}</span>}</div>
-      {sub && <div className="text-xs text-ink-2">{sub}</div>}
+      <div className="text-sm font-semibold text-ink">{label}</div>
+      <div className="numeral mt-1"><span>{value}</span>{unit && <span className="font-sans text-sm font-semibold text-ink-2">{unit}</span>}</div>
+      {sub && <div className="mt-0.5 text-sm text-ink-2">{sub}</div>}
     </div>
   );
 
@@ -68,13 +68,13 @@ export default async function ProgressPage() {
       <PageTitle title="Analysis" sub={`${diffDays(c.today, c.plan.race_date)} days to ${c.profile.race.name || race.label}. ${ms.length} timed runs in the last 120 days.`}
         actions={<><a href="/api/export?format=csv" className="btn">Export runs (CSV)</a><a href="/api/export?format=plan" className="btn">Export plan (CSV)</a></>} />
 
-      <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-8">
+      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="Last 7 days" value={an.acute7.toFixed(1)} unit="km" tint="var(--color-long)" />
         <Stat label="4-week average" value={an.mean4.toFixed(1)} unit="km/wk" sub={`8-week: ${an.mean8.toFixed(1)}`} tint="var(--color-long)" />
         <Stat label="Load ratio" value={an.load_ratio == null ? "–" : an.load_ratio.toFixed(2)} sub={ratioWord} tint={an.load_ratio != null && an.load_ratio > 1.3 ? "var(--color-hard)" : "var(--color-easy)"} />
         <Stat label="Runs per week" value={an.runs_per_week.toFixed(1)} sub={`active ${an.active_weeks8} of 8 weeks`} tint="var(--color-easy)" />
-        <Stat label="Median pace, 28 d" value={an.pace28 ? fmtPace(an.pace28) : "–"} unit="/km" tint="var(--color-test)" />
-        <Stat label="Median heart rate" value={an.hr28 ? Math.round(an.hr28) : "–"} unit="bpm" tint="var(--color-hard)" />
+        <Stat label="Median pace (28 d)" value={an.pace28 ? fmtPace(an.pace28) : "–"} unit="/km" tint="var(--color-test)" />
+        <Stat label="Median heart rate (28 d)" value={an.hr28 ? Math.round(an.hr28) : "–"} unit="bpm" tint="var(--color-hard)" />
         <Stat label="Efficiency" value={an.efficiency28 ? an.efficiency28.toFixed(2) : "–"} unit="m/beat" sub={effDelta == null ? "needs heart-rate data" : `${effDelta >= 0 ? "+" : ""}${effDelta.toFixed(1)}% vs prior 28 d`} tint="var(--color-test)" />
         <Stat label={`Predicted ${race.short}`} value={fmtDuration(pred)} sub={`${fmtPace(pred / race.km)} /km`} tint="var(--color-race)" />
       </div>
@@ -108,7 +108,7 @@ export default async function ProgressPage() {
               <tbody>{byKind.map((r) => <tr key={r.k}><td><i className="mr-2 inline-block h-2.5 w-2.5 rounded-sm" style={{ background: EFFORT[r.k].color, outline: `1px solid ${EFFORT[r.k].ink}` }} />{EFFORT[r.k].label}</td><td className="num">{r.n}</td><td className="num">{r.km.toFixed(1)}</td><td className="num">{r.pace ? fmtPace(r.pace) : "–"}</td><td className="num">{r.hr ? Math.round(r.hr) : "–"}</td></tr>)}</tbody>
             </table>
           )}
-          <div className="mt-4 grid grid-cols-2 gap-2">
+          <div className="mt-4 grid grid-cols-2 gap-3">
             <Stat label="Runs completed" value={pct(done, due.length)} sub={`${done} of ${due.length} planned`} />
             <Stat label="Strength completed" value={pct(strengthDone, strengthDue.length)} sub={`${strengthDone} of ${strengthDue.length}`} />
           </div>

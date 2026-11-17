@@ -108,7 +108,7 @@ export function Panel({ title, sub, right, children, className = "" }: { title?:
         <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
           <div className="min-w-0">
             {title && <h2 className="h2">{title}</h2>}
-            {sub && <p className="mt-1 text-sm text-muted">{sub}</p>}
+            {sub && <p className="mt-1 text-sm text-ink-2">{sub}</p>}
           </div>
           {right}
         </div>
@@ -121,9 +121,9 @@ export function Panel({ title, sub, right, children, className = "" }: { title?:
 export function Kpi({ label, value, unit, sub }: { label: string; value: React.ReactNode; unit?: string; sub?: React.ReactNode }) {
   return (
     <div className="stat">
-      <div className="numeral">{value}{unit && <span className="ml-1.5 font-sans text-sm font-semibold text-muted">{unit}</span>}</div>
-      <div className="mt-1 text-sm font-semibold">{label}</div>
-      {sub && <div className="text-xs text-muted">{sub}</div>}
+      <div className="text-sm font-semibold">{label}</div>
+      <div className="numeral mt-1"><span>{value}</span>{unit && <span className="font-sans text-sm font-semibold text-ink-2">{unit}</span>}</div>
+      {sub && <div className="mt-0.5 text-sm text-ink-2">{sub}</div>}
     </div>
   );
 }

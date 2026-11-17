@@ -39,7 +39,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="min-h-dvh antialiased">
         {nav && <Sidebar name={me!.name} />}
         <div className={nav ? "lg:pl-64" : ""}>
-          <main className={`mx-auto px-4 pt-4 lg:px-8 lg:pt-8 ${nav ? "max-w-xl pb-28 lg:max-w-5xl lg:pb-12" : "max-w-4xl pb-10"}`}>{children}</main>
+          <main className={`mx-auto px-4 pt-4 lg:px-8 lg:pt-8 ${nav ? "max-w-xl pb-28 lg:max-w-6xl lg:pb-12" : "max-w-4xl pb-10"}`}>{children}</main>
           {!nav && (
             <footer className="mx-auto max-w-4xl px-4 pb-10 text-sm text-muted lg:px-8">
               <div className="flex flex-wrap gap-x-4 gap-y-1 border-t-2 border-line-strong pt-4">
