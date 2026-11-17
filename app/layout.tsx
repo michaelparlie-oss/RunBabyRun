@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import "./globals.css";
 import { BottomNav, Sidebar } from "./_c/BottomNav";
 import { LiveRefresh } from "./_c/LiveRefresh";
+import { liveConfig, type LiveConfig } from "@/lib/live";
 import { currentUser } from "@/lib/session";
 import { getStore } from "@/lib/storage";
 import type { Account, Profile } from "@/lib/types";
@@ -11,13 +12,13 @@ import type { Account, Profile } from "@/lib/types";
 export const metadata: Metadata = { title: "RunBabyRun", description: "A race training plan built from your own Strava runs: 5K, 10K, half marathon or marathon." };
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#0f766e" };
 
-async function who(): Promise<{ name: string; hasPlan: boolean } | null> {
+async function who(): Promise<{ name: string; hasPlan: boolean; live: LiveConfig | null } | null> {
   try {
     const uid = await currentUser();
     if (!uid) return null;
     const store = await getStore();
     const [acc, prof] = await Promise.all([store.get<Account>(String(uid), "account"), store.get<Profile>(String(uid), "profile")]);
-    return acc ? { name: acc.firstname, hasPlan: !!prof } : null;
+    return acc ? { name: acc.firstname, hasPlan: !!prof, live: await liveConfig(uid) } : null;
   } catch {
     return null;
   }
@@ -46,7 +47,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           )}
         </div>
         {nav && <BottomNav />}
-        {nav && <LiveRefresh />}
+        {nav && <LiveRefresh live={me!.live} />}
       </body>
     </html>
   );

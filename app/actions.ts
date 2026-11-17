@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { generatePlan, PlanError } from "@/lib/plan/generate";
 import { profileFromForm, ScreeningError, suggestFromActs } from "@/lib/screening";
+import { publishChange } from "@/lib/live";
 import { loadCtx } from "@/lib/server/view";
 import { endSession, requireUser } from "@/lib/session";
 import { getStore } from "@/lib/storage";
@@ -15,7 +16,8 @@ import { parseDuration } from "@/lib/util/format";
 
 export type ActionState = { ok: boolean; message: string } | null;
 const str = (f: FormData, k: string) => ((f.get(k) as string | null) ?? "").trim();
-const refresh = () => revalidatePath("/", "layout");
+/** Re-render this request, and ping the runner's other open tabs and devices (Supabase Realtime, when configured). */
+const changed = async (uid: number) => { revalidatePath("/", "layout"); await publishChange(uid); };
 
 /** Keep sessions from before today as history when the plan is replaced. */
 function withHistory(next: Plan, prev: Plan | null, today: string): Plan {
@@ -43,7 +45,7 @@ export async function createPlan(_: ActionState, f: FormData): Promise<ActionSta
     if (e instanceof ScreeningError || e instanceof PlanError) return { ok: false, message: e.message };
     throw e;
   }
-  refresh();
+  await changed(uid);
   redirect("/plan?new=1");
 }
 
@@ -58,22 +60,30 @@ export async function rebuildPlan(): Promise<void> {
     : c.profile;
   let ok = true;
   try { await savePlan(uid, profile, c.plan, c.today); } catch (e) { if (!(e instanceof PlanError)) throw e; ok = false; }
-  refresh();
+  await changed(uid);
   redirect(ok ? "/plan?rebuilt=1" : "/settings?error=rebuild");
 }
 
 export async function syncNow(): Promise<SyncResult> {
   const uid = await requireUser();
   const r = await syncUser(uid, { force: true });
-  refresh();
+  await changed(uid);
   return r;
+}
+
+/** Quiet periodic check from an open tab: respects rate-limit pauses and only re-renders when a run arrived. */
+export async function syncBackground(): Promise<number> {
+  const uid = await requireUser();
+  const r = await syncUser(uid);
+  if (r.added > 0) await changed(uid);
+  return r.added;
 }
 
 async function editLogs(uid: number, fn: (l: Awaited<ReturnType<typeof loadCtx>>["logs"]) => void) {
   const c = await loadCtx(uid);
   fn(c.logs);
   await (await getStore()).set(String(uid), "logs", c.logs);
-  refresh();
+  await changed(uid);
   return c;
 }
 
@@ -87,7 +97,7 @@ export async function logPain(_: ActionState, f: FormData): Promise<ActionState>
   const d = isDate(date) && diffDays(date, c.today) >= 0 && diffDays(date, c.today) <= 30 ? date : c.today;
   c.logs.wellbeing = [...c.logs.wellbeing.filter((w) => !(w.date === d && w.area === area)), { date: d, area, pain, note: str(f, "note").slice(0, 200) }].slice(-200);
   await (await getStore()).set(String(uid), "logs", c.logs);
-  refresh();
+  await changed(uid);
   return { ok: true, message: pain > 3 ? "Logged. Above 3 out of 10: make your next run easy or rest, and see the note on Today." : "Logged." };
 }
 
@@ -105,7 +115,7 @@ export async function toggleSkip(f: FormData): Promise<void> {
   if (c.logs.skipped[id]) delete c.logs.skipped[id];
   else c.logs.skipped[id] = str(f, "reason").slice(0, 120) || "Skipped";
   await (await getStore()).set(String(uid), "logs", c.logs);
-  refresh();
+  await changed(uid);
 }
 
 /** A new race or time-trial result: paces update everywhere; sessions stay as planned. */
@@ -121,7 +131,7 @@ export async function updateFitness(_: ActionState, f: FormData): Promise<Action
   const store = await getStore();
   await store.set(String(uid), "profile", profile);
   await store.set(String(uid), "logs", c.logs);
-  refresh();
+  await changed(uid);
   return { ok: true, message: "Saved. Your paces are updated across the plan." };
 }
 
@@ -132,7 +142,7 @@ export async function updateMaxHr(_: ActionState, f: FormData): Promise<ActionSt
   const v = Number(str(f, "max_hr"));
   if (!Number.isInteger(v) || v < 120 || v > 230) return { ok: false, message: "Enter a maximum heart rate between 120 and 230." };
   await (await getStore()).set(String(uid), "profile", { ...c.profile, health: { ...c.profile.health, max_hr: v, max_hr_source: "entered" } } satisfies Profile);
-  refresh();
+  await changed(uid);
   return { ok: true, message: "Saved. Heart-rate ranges are updated." };
 }
 

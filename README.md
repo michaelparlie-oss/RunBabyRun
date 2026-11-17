@@ -63,6 +63,20 @@ curl -X POST https://www.strava.com/api/v3/push_subscriptions \
 Own-keys mode has no webhook (each runner's own application would need its own subscription); a revoked connection is
 detected at the next sync instead.
 
+### Live updates (Supabase Realtime, optional)
+
+Signed-in pages refresh themselves every 45 seconds and check Strava for new runs every 5 minutes while open. With a
+free Supabase project they also update the moment something changes (a sync, a log entry on another device, a Strava
+webhook event). Set two site environment variables, both public values from the Supabase project's Connect dialog:
+
+- `SUPABASE_URL`, e.g. `https://abcd.supabase.co`
+- `SUPABASE_PUBLISHABLE_KEY`, the `sb_publishable_…` key
+
+No tables, secret keys or personal data are involved: the server posts an empty ping to an unguessable per-runner
+Broadcast topic and the open tab re-renders from the site's own storage. `/api/health` reports `live_updates`.
+Instant pickup of a brand-new Strava run also needs the webhook above (shared app); in own-keys mode the 5-minute
+check does that job.
+
 ### Storage
 
 Each runner's data is a handful of JSON documents keyed by their Strava athlete id (`lib/storage`):

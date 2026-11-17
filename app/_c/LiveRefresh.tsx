@@ -2,51 +2,61 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { syncBackground } from "@/app/actions";
+import type { LiveConfig } from "@/lib/live";
 
-const INTERVAL_MS = 45_000;
+const REFRESH_MS = 45_000; // re-render from stored data
+const SYNC_MS = 5 * 60_000; // ask Strava for new runs (one small API call)
 
 /**
- * Keeps the signed-in dashboard feeling alive without a manual reload.
- * While the tab is visible, re-runs the current route's server components
- * (router.refresh()) every INTERVAL_MS, so today's date rollover, newly
- * synced Strava activities, and anything another tab/device changed show
- * up on their own. Pauses entirely when the tab is hidden or offline, and
- * never fires while a page is mid-interaction (focus in a form field).
+ * Keeps the signed-in pages current without a reload:
+ *  - instantly, when the server pings this runner's Supabase Realtime topic (a sync, a log entry, another device);
+ *  - every 45 s while the tab is visible, as a fallback and for the date rolling over;
+ *  - every 5 min it also checks Strava for new runs.
+ * Pauses when the tab is hidden and never interrupts typing in a form field.
  */
-export function LiveRefresh() {
+export function LiveRefresh({ live }: { live: LiveConfig | null }) {
   const router = useRouter();
-  const [pulse, setPulse] = useState(false);
-  const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [state, setState] = useState<"off" | "live" | "poll">("off");
+  const [pulse, setPulse] = useState(0);
+  const lastSync = useRef(Date.now());
 
   useEffect(() => {
-    function tick() {
+    const busy = () => !!document.activeElement && ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName);
+    const refresh = () => { if (document.hidden || busy()) return; router.refresh(); setPulse((n) => n + 1); };
+    const tick = () => {
       if (document.hidden) return;
-      if (document.activeElement && ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) return;
-      router.refresh();
-      setPulse(true);
-      setTimeout(() => setPulse(false), 900);
-    }
-    function start() {
-      stop();
-      timer.current = setInterval(tick, INTERVAL_MS);
-    }
-    function stop() {
-      if (timer.current) clearInterval(timer.current);
-      timer.current = null;
-    }
-    function onVisibility() {
-      if (document.hidden) stop();
-      else { tick(); start(); }
-    }
-    start();
-    document.addEventListener("visibilitychange", onVisibility);
-    window.addEventListener("focus", tick);
-    return () => { stop(); document.removeEventListener("visibilitychange", onVisibility); window.removeEventListener("focus", tick); };
-  }, [router]);
+      if (Date.now() - lastSync.current > SYNC_MS) { lastSync.current = Date.now(); syncBackground().catch(() => {}); }
+      refresh();
+    };
+    const timer = setInterval(tick, REFRESH_MS);
+    const onVisible = () => { if (!document.hidden) tick(); };
+    document.addEventListener("visibilitychange", onVisible);
+    setState("poll");
 
+    let stop = () => {};
+    if (live) {
+      let cancelled = false;
+      import("@supabase/supabase-js").then(({ createClient }) => {
+        if (cancelled) return;
+        const sb = createClient(live.url, live.key, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
+        const ch = sb.channel(live.topic).on("broadcast", { event: "changed" }, refresh).subscribe((s) => setState(s === "SUBSCRIBED" ? "live" : "poll"));
+        stop = () => { sb.removeChannel(ch); };
+      }).catch(() => {});
+      const prev = stop;
+      stop = () => { cancelled = true; prev(); };
+    }
+    return () => { clearInterval(timer); document.removeEventListener("visibilitychange", onVisible); stop(); };
+  }, [router, live]);
+
+  if (state === "off") return null;
   return (
-    <span className="pointer-events-none fixed bottom-20 right-3 z-40 lg:bottom-4" aria-hidden>
-      <span className={`block h-2 w-2 rounded-full bg-accent transition-opacity duration-700 ${pulse ? "opacity-100" : "opacity-0"}`} />
+    <span className="pointer-events-none fixed bottom-20 right-3 z-40 flex items-center gap-1.5 rounded-full border border-line bg-white/90 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted shadow-sm backdrop-blur lg:bottom-4" title={state === "live" ? "Updates arrive instantly" : "Refreshing every 45 seconds"}>
+      <span className="relative flex h-2 w-2">
+        <span key={pulse} className={`absolute inline-flex h-full w-full rounded-full ${state === "live" ? "bg-good" : "bg-warn"} live-ping`} />
+        <span className={`relative inline-flex h-2 w-2 rounded-full ${state === "live" ? "bg-good" : "bg-warn"}`} />
+      </span>
+      {state === "live" ? "Live" : "Auto"}
     </span>
   );
 }

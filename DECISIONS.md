@@ -57,3 +57,12 @@ to recreational runners; a reference run taken from Strava training data underst
   mode has no webhook because each runner's application would need its own subscription.
 - **Secrets.** `SESSION_SECRET` from the environment when set; otherwise generated once and stored in site storage so the
   site works with zero configuration. Setting the env var is safer because the key is then held apart from the data.
+
+### Live updates: Supabase Realtime as a signal, not a datastore
+
+Supabase is used only for Realtime Broadcast. The server posts an empty `changed` event to a topic derived from
+HMAC(site secret, athlete id); the browser subscribes with the publishable key and calls `router.refresh()`, which
+re-renders from Netlify Blobs under the normal session check. This keeps runner data in one place, needs no Supabase
+secret key or row-level-security policies, and a leaked topic lets a stranger trigger a reload and nothing else.
+Polling (45 s render, 5 min Strava check) stays as the fallback, so the app works unchanged if Supabase is down or
+not configured.

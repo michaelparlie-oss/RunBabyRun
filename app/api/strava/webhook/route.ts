@@ -1,11 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { safeEqual } from "@/lib/crypto";
 import { loadAccount } from "@/lib/strava/oauth";
-import { accessRevoked, purgeStravaData } from "@/lib/strava/sync";
+import { publishChange } from "@/lib/live";
+import { accessRevoked, purgeStravaData, syncUser } from "@/lib/strava/sync";
 
 /**
- * Strava webhook for the shared Strava application. Its one job is to act when a runner revokes access
- * from Strava's side, as Strava's API terms ask. See README ("Webhook") for the one-time subscription.
+ * Strava webhook for the shared Strava application. It acts when a runner revokes access from Strava's side,
+ * as Strava's API terms ask, and it pulls a new or changed activity straight away so open tabs update at once. See README ("Webhook") for the one-time subscription.
  */
 
 /** Subscription handshake: Strava calls this once and expects the challenge echoed back. */
@@ -31,6 +32,13 @@ export async function POST(req: NextRequest) {
       const acc = await loadAccount(uid);
       if (acc?.mode === "shared" && (await accessRevoked(uid))) await purgeStravaData(uid);
     } catch { /* Strava expects a fast 200 regardless; the next sync reports a revoked connection */ }
+  }
+  // New, edited or deleted activity: the event is only a hint. The data comes from our own authenticated sync.
+  if (ev.object_type === "activity" && Number.isSafeInteger(uid) && uid > 0) {
+    try {
+      const acc = await loadAccount(uid);
+      if (acc?.mode === "shared") { await syncUser(uid); await publishChange(uid); }
+    } catch { /* the open tab's own periodic check picks it up instead */ }
   }
   return NextResponse.json({ ok: true });
 }
