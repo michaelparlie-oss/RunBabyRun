@@ -99,3 +99,12 @@ It needs at least three weeks of history and four runs; with less, the runner's 
 coaching judgement, chosen to err low. The load ratio in particular is shown on the Analysis page as a descriptive
 guide and is labelled as contested; it is not presented as an injury predictor. The plan shows a notice saying what
 was measured and what was changed.
+
+### Hosting on Vercel, data in Supabase
+
+Netlify's free plan charges credits per production deploy and paused deploys after about twenty in a month, so
+hosting moved to Vercel. Netlify Blobs does not exist there, so runner documents moved to a single Supabase table,
+`docs(owner, key, value jsonb)`, behind the existing `DocStore` interface. Row-level security is on with no policies:
+the publishable key (which the browser sees) can do nothing with it, and the server uses the secret key. This
+replaces the earlier position that Supabase held no runner data; the privacy page says so. Functions run in Singapore
+(`sin1`) to sit next to the database.

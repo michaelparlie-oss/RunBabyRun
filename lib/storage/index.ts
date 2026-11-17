@@ -1,3 +1,4 @@
+import { supabaseEnv } from "@/lib/supabase";
 import fs from "node:fs/promises";
 import path from "node:path";
 
@@ -65,12 +66,45 @@ async function blobStore(): Promise<DocStore> {
   };
 }
 
+/**
+ * Supabase Postgres through its REST interface: one table, `docs(owner, key, value jsonb)`.
+ * Row-level security is on with no policies, so only this server (holding the secret key) can read or write it.
+ */
+export function supabaseStore(url: string, secret: string, f: typeof fetch = fetch): DocStore {
+  const base = `${url.replace(/\/+$/, "")}/rest/v1/docs`;
+  const row = (o: string, key: string) => (check(o, key), `owner=eq.${o}&key=eq.${key}`);
+  async function call(query: string, init: { method: string; body?: unknown; prefer?: string }): Promise<unknown> {
+    const res = await f(`${base}?${query}`, {
+      method: init.method, cache: "no-store", signal: AbortSignal.timeout(10_000),
+      headers: { apikey: secret, Authorization: `Bearer ${secret}`, "Content-Type": "application/json", ...(init.prefer ? { Prefer: init.prefer } : {}) },
+      body: init.body === undefined ? undefined : JSON.stringify(init.body),
+    });
+    if (!res.ok) throw new Error(`Storage request failed (${res.status})`);
+    const text = await res.text();
+    return text ? JSON.parse(text) : null;
+  }
+  return {
+    kind: "supabase",
+    async get<T>(o: string, key: string) { const rows = (await call(`${row(o, key)}&select=value`, { method: "GET" })) as { value: T }[] | null; return rows?.[0]?.value ?? null; },
+    async set(o, key, value) { check(o, key); await call("on_conflict=owner,key", { method: "POST", body: { owner: o, key, value }, prefer: "resolution=merge-duplicates,return=minimal" }); },
+    async setIfNew(o, key, value) {
+      check(o, key);
+      const made = (await call("on_conflict=owner,key&select=key", { method: "POST", body: { owner: o, key, value }, prefer: "resolution=ignore-duplicates,return=representation" })) as unknown[] | null;
+      return (made?.length ?? 0) > 0;
+    },
+    async del(o, key) { await call(row(o, key), { method: "DELETE", prefer: "return=minimal" }); },
+    async delAll(o) { check(o, "x"); await call(`owner=eq.${o}`, { method: "DELETE", prefer: "return=minimal" }); },
+  };
+}
+
 const g = globalThis as unknown as { __rbrStore?: Promise<DocStore> };
 export function setStoreForTests(s: DocStore | null) { g.__rbrStore = s ? Promise.resolve(s) : undefined; }
 
 export function getStore(): Promise<DocStore> {
   if (!g.__rbrStore) {
     g.__rbrStore = (async () => {
+      const sb = supabaseEnv(), secret = process.env.SUPABASE_SECRET_KEY?.trim();
+      if (sb && secret && process.env.STORAGE !== "blobs" && process.env.STORAGE !== "file") return supabaseStore(sb.url, secret);
       const onNetlify = process.env.NETLIFY || process.env.NETLIFY_BLOBS_CONTEXT || process.env.SITE_ID || process.env.DEPLOY_ID || process.env.AWS_LAMBDA_FUNCTION_NAME;
       if (onNetlify || process.env.STORAGE === "blobs") return blobStore();
       return fileStore();

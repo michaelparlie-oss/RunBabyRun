@@ -15,6 +15,9 @@ def runs(athlete):
     return out
 
 USERS = {}   # email -> {id, password, name}
+DOCS = {}    # (owner, key) -> value, the stand-in for the Supabase `docs` table
+def docq(u):
+    q = parse_qs(u.query); return q.get("owner", ["eq."])[0][3:], (q.get("key", [None])[0] or "eq.")[3:] if "key" in q else None
 def user_json(email): u = USERS[email]; return {"id": u["id"], "email": email, "user_metadata": {"name": u["name"]}}
 
 class H(BaseHTTPRequestHandler):
@@ -28,6 +31,12 @@ class H(BaseHTTPRequestHandler):
     def auth_user(self):
         tok = self.headers.get("Authorization", "").replace("Bearer ", "")
         return next((e for e, u in USERS.items() if f"jwt-{u['id']}" == tok), None)
+    def do_DELETE(self):
+        u = urlparse(self.path)
+        if u.path != "/rest/v1/docs" or self.headers.get("apikey") != "test-secret": return self.send({"message": "not found"}, 404)
+        o, k = docq(u)
+        for x in [x for x in DOCS if x[0] == o and (k is None or x[1] == k)]: del DOCS[x]
+        self.send([])
     def do_PUT(self):
         raw = self.rfile.read(int(self.headers.get("Content-Length", 0))).decode()
         e = self.auth_user()
@@ -48,6 +57,11 @@ class H(BaseHTTPRequestHandler):
                 if not x or x["password"] != j.get("password"): return self.send({"error_code": "invalid_credentials", "msg": "Invalid login credentials"}, 400)
                 return self.send({"access_token": f"jwt-{x['id']}", "user": user_json(j["email"])})
             if u.path == "/auth/v1/recover": return self.send({})
+            if u.path == "/rest/v1/docs":
+                if self.headers.get("apikey") != "test-secret": return self.send({"message": "permission denied"}, 401)
+                k = (j["owner"], j["key"]); new = k not in DOCS
+                if new or "merge-duplicates" in self.headers.get("Prefer", ""): DOCS[k] = j["value"]
+                return self.send([{"key": j["key"]}] if new and "representation" in self.headers.get("Prefer", "") else [], 201)
             if u.path == "/rest/v1/rpc/delete_own_account":
                 e = self.auth_user()
                 if not e: return self.send({"message": "unauthorized"}, 401)
@@ -63,6 +77,9 @@ class H(BaseHTTPRequestHandler):
         self.send({"message": "not found"}, 404)
     def do_GET(self):
         u = urlparse(self.path)
+        if u.path == "/rest/v1/docs":
+            if self.headers.get("apikey") != "test-secret": return self.send({"message": "permission denied"}, 401)
+            o, k = docq(u); return self.send([{"value": DOCS[(o, k)]}] if (o, k) in DOCS else [])
         if u.path == "/auth/v1/user":
             e = self.auth_user()
             return self.send(user_json(e)) if e else self.send({"message": "unauthorized"}, 401)

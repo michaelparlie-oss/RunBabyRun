@@ -58,7 +58,7 @@ race = TODAY + datetime.timedelta(days=16 * 7 + (6 - TODAY.weekday()) % 7)
 
 a = Browser()
 s, _, b = a.get("/"); check("landing page", s == 200 and "Create an account" in b and "Log in" in b)
-s, _, b = a.get("/api/health"); check("health", s == 200 and json.loads(b)["storage_ok"] and json.loads(b)["storage"] == "file", b)
+s, _, b = a.get("/api/health"); check("health", s == 200 and json.loads(b)["storage_ok"] and json.loads(b)["storage"] in ("file", "supabase"), b)
 for p in ["/week", "/plan", "/settings", "/progress", "/start", "/session/x", "/log"]:
     s, h, _ = a.req(p); check(f"signed out {p} redirects home", s in (303, 307) and urllib.parse.urlparse(h["Location"]).path == "/", f"{s}")
 s, _, b = a.get("/api/export"); check("export needs sign-in", s == 401)

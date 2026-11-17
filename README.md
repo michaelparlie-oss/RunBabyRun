@@ -32,16 +32,32 @@ until Strava raises its capacity, so the app supports both of these at the same 
 Check Strava's current API terms, rate limits and athlete-capacity process before opening the shared app to the public:
 <https://developers.strava.com/docs/getting-started/> and <https://developers.strava.com/docs/rate-limits/>.
 
-## Setup on Netlify
+## Setup on Vercel (with Supabase)
 
-1. Create the site from this repository (build command and plugin come from `netlify.toml`).
-2. Optional environment variables (see `.env.example`):
-   - `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`: enables the shared app.
-   - `SESSION_SECRET`: 32+ random characters. If unset, a secret is generated and kept in the site's storage.
-   - `CONTACT_EMAIL`: shown on the privacy page.
-   - `STRAVA_WEBHOOK_VERIFY_TOKEN`: see Webhook below.
-3. In the Strava API application, set **Authorization Callback Domain** to the site's host (e.g. `runbabyrun.netlify.app`).
-4. Open `/api/health`. It reports whether storage works and whether the shared app is configured.
+Hosting is Vercel; sign-in, live updates and all runner data are in one Supabase project.
+
+1. **Supabase:** create a project and apply the two migrations: `docs_table` (the `docs` table, row-level security on,
+   no policies) and `delete_own_account`. Then follow "Accounts" below for the Auth settings.
+2. **Vercel:** import this GitHub repository as a new project (framework: Next.js; `vercel.json` pins functions to
+   Singapore, next to the database).
+3. **Environment variables** on the Vercel project:
+
+   | Name | Value |
+   | --- | --- |
+   | `SUPABASE_URL` | `https://YOUR-REF.supabase.co` (public) |
+   | `SUPABASE_PUBLISHABLE_KEY` | the `sb_publishable_…` key (public) |
+   | `SUPABASE_SECRET_KEY` | the `sb_secret_…` key. Server only; it is what lets the site read and write `docs` |
+   | `SESSION_SECRET` | a long random string. Signs sessions and encrypts Strava tokens; changing it signs everyone out and breaks stored Strava connections |
+   | `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET` | optional, for one-click "Connect with Strava" |
+   | `STRAVA_WEBHOOK_VERIFY_TOKEN` | optional, see Webhook |
+   | `CONTACT_EMAIL` | optional, shown on the privacy page |
+
+4. Deploy, then open `/api/health`: it should report `"storage":"supabase"`, `"storage_ok":true`, `"live_updates":true`.
+5. In Strava API settings, the Authorization Callback Domain is the site's domain (for the shared app and for each
+   runner's own keys alike).
+
+The app still runs on Netlify (Netlify Blobs storage, chosen automatically when `SUPABASE_SECRET_KEY` is absent), but
+Netlify's free plan meters every production deploy.
 
 ### Webhook (shared app only)
 
@@ -96,12 +112,11 @@ check does that job.
 
 ### Storage
 
-Each runner's data is a handful of JSON documents keyed by their Strava athlete id (`lib/storage`):
+Each runner's data is a handful of JSON documents keyed by their account id (`lib/storage`):
 
-- **Netlify Blobs** in production. No setup and no extra cost. Suitable while the number of runners is modest.
+- **Supabase Postgres** (`docs` table) when `SUPABASE_SECRET_KEY` is set. This is the production setup.
+- **Netlify Blobs** on Netlify without that key.
 - **Files in `.data/`** for local development.
-- `docs/netlify-database.md` describes how to move to **Netlify Database (Postgres)**, which costs credits, when the
-  site grows.
 
 ## Local development
 

@@ -76,3 +76,42 @@ describe("accounts", () => {
     expect(await linkStrava(77, 1e12 + 2)).toBe(true);
   });
 });
+
+describe("Supabase storage", () => {
+  it("talks to the docs table with the secret key and never mixes owners", async () => {
+    const { supabaseStore } = await import("@/lib/storage");
+    const rows = new Map<string, unknown>();
+    const seen: { url: string; method: string; prefer?: string; key?: string }[] = [];
+    const f = (async (url: string, init: RequestInit) => {
+      const h = init.headers as Record<string, string>;
+      seen.push({ url, method: init.method!, prefer: h.Prefer, key: h.apikey });
+      const q = new URL(url).searchParams, id = `${q.get("owner")?.slice(3)}/${q.get("key")?.slice(3)}`;
+      if (init.method === "GET") return new Response(JSON.stringify(rows.has(id) ? [{ value: rows.get(id) }] : []));
+      if (init.method === "POST") {
+        const b = JSON.parse(init.body as string), k = `${b.owner}/${b.key}`, fresh = !rows.has(k);
+        if (fresh || h.Prefer.includes("merge-duplicates")) rows.set(k, b.value);
+        return new Response(h.Prefer.includes("representation") ? JSON.stringify(fresh ? [{ key: b.key }] : []) : "", { status: 201 });
+      }
+      for (const k of [...rows.keys()]) if (k.startsWith(`${q.get("owner")!.slice(3)}/`) && (!q.get("key") || k === id)) rows.delete(k);
+      return new Response("");
+    }) as unknown as typeof fetch;
+    const s = supabaseStore("https://abc.supabase.co/", "sb_secret_x", f);
+    await s.set("1", "plan", { a: 1 });
+    await s.set("1", "plan", { a: 2 });
+    expect(await s.get("1", "plan")).toEqual({ a: 2 });
+    expect(await s.get("2", "plan")).toBeNull();
+    expect(await s.setIfNew("1", "plan", { a: 3 })).toBe(false);
+    expect(await s.setIfNew("1", "user", { n: 1 })).toBe(true);
+    await s.set("2", "plan", { b: 1 });
+    await s.del("1", "user");
+    expect(await s.get("1", "user")).toBeNull();
+    await s.delAll("1");
+    expect(await s.get("1", "plan")).toBeNull();
+    expect(await s.get("2", "plan")).toEqual({ b: 1 });
+    expect(seen[0].url).toBe("https://abc.supabase.co/rest/v1/docs?on_conflict=owner,key");
+    expect(seen.every((c) => c.key === "sb_secret_x")).toBe(true);
+    await expect(s.get("../x", "plan")).rejects.toThrow("Invalid storage key");
+    const down = supabaseStore("https://abc.supabase.co", "k", (async () => new Response("no", { status: 500 })) as unknown as typeof fetch);
+    await expect(down.get("1", "plan")).rejects.toThrow("Storage request failed (500)");
+  });
+});

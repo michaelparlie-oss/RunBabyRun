@@ -26,7 +26,7 @@ export default function PrivacyPage() {
             <li>Your Strava access tokens, encrypted. If you use your own Strava API keys, the client secret is stored encrypted as well.</li>
             <li>A sign-in cookie on your device that lasts 30 days. There are no advertising or analytics cookies.</li>
           </ul>
-          <p className="mt-2">Data is kept in the site&apos;s storage on Netlify. To update open pages instantly, the site sends an empty &quot;something changed&quot; signal through Supabase Realtime on a random-looking channel; no name, Strava number or training data is sent there. Apart from sign-in, nothing else about you is held by Supabase. Other runners cannot see your data. The person operating this site has administrative access to the hosting account and so can technically access stored data.</p>
+          <p className="mt-2">Your data is kept in a database at Supabase (Singapore region), which only this site&apos;s server can read; the site itself is served by Vercel. To update open pages instantly, the site also sends an empty &quot;something changed&quot; signal on a random-looking channel that carries no personal data. Other runners cannot see your data. The person operating this site has administrative access to the hosting and database accounts and so can technically access stored data.</p>
         </Panel>
         <Panel title="What it is used for">
           <p>Only to build and adjust your training plan and show your progress. It is not sold, not shared with other users, not used for advertising and not used to train AI models.</p>
