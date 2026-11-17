@@ -64,7 +64,7 @@ export default function AboutPage() {
           <ol className="space-y-3 text-sm">
             {SOURCES.map((s) => (
               <li key={s.id} id={s.id}>
-                <div>{s.cite}{s.doi && <> <a className="text-accent underline" href={`https://doi.org/${s.doi}`} target="_blank" rel="noreferrer">doi:{s.doi}</a></>}</div>
+                <div>{s.cite}{s.doi && <> <a className="font-semibold underline underline-offset-4" href={`https://doi.org/${s.doi}`} target="_blank" rel="noreferrer">doi:{s.doi}</a></>}</div>
                 <div className="mt-0.5 text-ink-2"><b>Used for:</b> {s.use}</div>
               </li>
             ))}

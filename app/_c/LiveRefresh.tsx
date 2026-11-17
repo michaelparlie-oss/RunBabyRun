@@ -51,7 +51,7 @@ export function LiveRefresh({ live }: { live: LiveConfig | null }) {
 
   if (state === "off") return null;
   return (
-    <span className="pointer-events-none fixed bottom-20 right-3 z-40 flex items-center gap-1.5 rounded-full border border-line bg-white/90 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted shadow-sm backdrop-blur lg:bottom-4" title={state === "live" ? "Updates arrive instantly" : "Refreshing every 45 seconds"}>
+    <span className="pointer-events-none fixed bottom-20 right-3 z-40 flex items-center gap-1.5 border border-line bg-white px-2 py-1 text-xs font-semibold text-ink-2 lg:bottom-4" title={state === "live" ? "Updates arrive instantly" : "Refreshing every 45 seconds"}>
       <span className="relative flex h-2 w-2">
         <span key={pulse} className={`absolute inline-flex h-full w-full rounded-full ${state === "live" ? "bg-good" : "bg-warn"} live-ping`} />
         <span className={`relative inline-flex h-2 w-2 rounded-full ${state === "live" ? "bg-good" : "bg-warn"}`} />

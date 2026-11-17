@@ -1,84 +1,119 @@
 @import "tailwindcss";
 
-/* Design tokens: one place for the whole app (light theme). Chart roles follow the validated reference palette. */
+/*
+  RunBabyRun visual system. The references are the things runners actually look at: road signage lettering,
+  a race bib, a hi-vis vest, lane lines. Navy ink on cool chalk, one hi-vis yellow used like a highlighter,
+  and a colour per effort that means the same thing everywhere (easy, long, hard, test, race, strength).
+*/
 @theme {
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Barlow", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-display: "Barlow Condensed", "Barlow", "Arial Narrow", Arial, sans-serif;
 
-  --color-page: #f6f7f9;
+  --color-page: #eef1f5;
   --color-card: #ffffff;
-  --color-ink: #0f172a;
-  --color-ink-2: #475569;
-  --color-muted: #64748b;
-  --color-faint: #94a3b8;
-  --color-line: #e5e7eb;
-  --color-line-strong: #d1d5db;
+  --color-ink: #101b3b;
+  --color-ink-2: #3d4a70;
+  --color-muted: #5f6b8c;
+  --color-faint: #98a2bd;
+  --color-line: #d5dae6;
+  --color-line-strong: #b6bed2;
+  --color-wash: #f5f7fa;
 
-  --color-accent: #0f766e;
-  --color-accent-strong: #115e59;
-  --color-accent-soft: #e6f4f2;
+  --color-hivis: #e4f222;
+  --color-hivis-deep: #c5d400;
+
+  --color-accent: #1d3fbf;
+  --color-accent-strong: #15309a;
+  --color-accent-soft: #e6ecff;
+
+  /* effort colours */
+  --color-easy: #12a594;
+  --color-long: #2f6fed;
+  --color-hard: #e5386d;
+  --color-test: #8b5cf6;
+  --color-strength: #64708f;
 
   /* chart roles */
-  --color-series-1: #2a78d6;
-  --color-series-2: #eb6834;
-  --color-series-3: #1baf7a;
-  --color-grid: #eceae4;
-  --color-axis: #898781;
+  --color-series-1: #2f6fed;
+  --color-series-2: #e5386d;
+  --color-series-3: #12a594;
+  --color-grid: #dfe4ee;
+  --color-axis: #7c88a8;
 
-  /* status (always paired with an icon/label) */
-  --color-good: #0ca30c;
-  --color-good-ink: #006300;
-  --color-warn: #fab219;
-  --color-critical: #d03b3b;
+  /* status (always paired with a word) */
+  --color-good: #0f9d58;
+  --color-good-ink: #0a6b3c;
+  --color-warn: #f0a202;
+  --color-critical: #d92d4b;
 }
 
 :root { color-scheme: light; }
 html, body { background: var(--color-page); color: var(--color-ink); }
-body { -webkit-tap-highlight-color: transparent; font-feature-settings: "cv11", "ss01"; }
+body { -webkit-tap-highlight-color: transparent; font-size: 16px; line-height: 1.5; }
 .tnum { font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 2px; border-radius: 2px; }
+::selection { background: var(--color-hivis); color: var(--color-ink); }
 
-@layer components {
-/* Surfaces */
-.card { background: var(--color-card); border: 1px solid var(--color-line); border-radius: 14px; padding: 1rem; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04); }
-@media (min-width: 1024px) { .card { padding: 1.25rem; } }
-.card-flush { background: var(--color-card); border: 1px solid var(--color-line); border-radius: 14px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04); overflow: hidden; }
-
-/* Controls */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; border-radius: 10px; padding: .5rem .9rem; font-weight: 600; font-size: .875rem; border: 1px solid var(--color-line-strong); background: white; color: var(--color-ink); min-height: 2.5rem; transition: background .15s, border-color .15s; }
-.btn:hover { background: #f8fafc; border-color: #cbd5e1; }
-.btn-primary { background: var(--color-accent); color: white; border-color: var(--color-accent); }
-.btn-primary:hover { background: var(--color-accent-strong); border-color: var(--color-accent-strong); }
-.btn-danger { background: #b91c1c; color: white; border-color: #b91c1c; }
-.btn-danger:hover { background: #991b1b; }
-.btn:disabled { opacity: .5; }
-.input { border: 1px solid var(--color-line-strong); border-radius: 10px; padding: .5rem .7rem; background: white; min-height: 2.5rem; width: 100%; }
-.input:focus { outline: 2px solid var(--color-accent); outline-offset: 1px; }
-
-/* Type */
-.label { font-size: .7rem; color: var(--color-muted); font-weight: 650; text-transform: uppercase; letter-spacing: .06em; }
-.h2 { font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; }
-.kicker { font-size: .75rem; font-weight: 600; color: var(--color-muted); }
-
-/* Segmented control */
-.seg { display: inline-flex; max-width: 100%; background: #eef0f3; border-radius: 10px; padding: 3px; gap: 2px; }
-.seg button, .seg a { white-space: nowrap; flex-shrink: 0; font-size: .8rem; font-weight: 600; padding: .35rem .7rem; border-radius: 8px; color: var(--color-ink-2); }
-.seg [aria-pressed="true"], .seg [aria-current="page"] { background: white; color: var(--color-ink); box-shadow: 0 1px 2px rgba(15,23,42,.08); }
-
-/* Tables */
-.tbl { width: 100%; border-collapse: collapse; font-size: .85rem; }
-.tbl th { text-align: left; font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; color: var(--color-muted); font-weight: 650; padding: .55rem .75rem; border-bottom: 1px solid var(--color-line); background: #fafbfc; white-space: nowrap; }
-.tbl td { padding: .55rem .75rem; border-bottom: 1px solid #f1f2f4; font-variant-numeric: tabular-nums; }
-.tbl tr:last-child td { border-bottom: 0; }
-.tbl tbody tr:hover { background: #fafbfc; }
-.tbl .num { text-align: right; }
-
+@layer base {
+  h1, h2, h3 { font-family: var(--font-display); letter-spacing: 0.005em; line-height: 1.05; }
 }
 
-/* Recharts polish */
-.recharts-cartesian-axis-tick-value { fill: var(--color-axis); font-size: 11px; }
-.recharts-legend-item-text { color: var(--color-ink-2) !important; }
-.recharts-tooltip-cursor { fill: rgba(15, 23, 42, 0.04); }
+@layer components {
+/* Surfaces: flat, square-shouldered, no drop shadows. Depth comes from the navy blocks, not from blur. */
+.card { background: var(--color-card); border: 1px solid var(--color-line); border-radius: 4px; padding: 1rem; }
+@media (min-width: 1024px) { .card { padding: 1.25rem; } }
+.card-flush { background: var(--color-card); border: 1px solid var(--color-line); border-radius: 4px; overflow: hidden; }
+.block-ink { background: var(--color-ink); color: #fff; border-radius: 4px; }
+.mark { background: var(--color-hivis); color: var(--color-ink); padding: 0 .3em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+
+/* Display type */
+.display { font-family: var(--font-display); font-weight: 800; line-height: .95; letter-spacing: 0; text-transform: uppercase; }
+.numeral { font-family: var(--font-display); font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+
+/* Controls */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; border-radius: 4px; padding: .5rem 1rem; font-weight: 600; font-size: .9375rem; border: 1.5px solid var(--color-ink); background: transparent; color: var(--color-ink); min-height: 2.75rem; transition: background .12s, color .12s; }
+.btn:hover { background: var(--color-ink); color: #fff; }
+.btn-primary { background: var(--color-hivis); border-color: var(--color-ink); color: var(--color-ink); }
+.btn-primary:hover { background: var(--color-ink); color: var(--color-hivis); }
+.btn-danger { background: var(--color-critical); color: #fff; border-color: var(--color-critical); }
+.btn-danger:hover { background: #b01f3b; color: #fff; }
+.btn:disabled { opacity: .5; }
+.input { border: 1.5px solid var(--color-line-strong); border-radius: 4px; padding: .5rem .7rem; background: #fff; min-height: 2.75rem; width: 100%; }
+.input:focus { outline: 3px solid var(--color-accent); outline-offset: 0; border-color: var(--color-accent); }
+
+/* Type roles */
+.label { font-size: .8125rem; color: var(--color-muted); font-weight: 600; }
+.h2 { font-family: var(--font-display); font-size: 1.375rem; font-weight: 700; text-transform: uppercase; line-height: 1.1; }
+.kicker { font-size: .8125rem; font-weight: 600; color: var(--color-muted); }
+
+/* Segmented control */
+.seg { display: inline-flex; max-width: 100%; border: 1.5px solid var(--color-ink); border-radius: 4px; overflow: hidden; }
+.seg button, .seg a { white-space: nowrap; flex-shrink: 0; font-size: .875rem; font-weight: 600; padding: .4rem .8rem; color: var(--color-ink); }
+.seg [aria-pressed="true"], .seg [aria-current="page"] { background: var(--color-ink); color: #fff; }
+
+/* Tables */
+.tbl { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.tbl th { text-align: left; font-size: .8125rem; color: var(--color-muted); font-weight: 600; padding: .5rem .75rem; border-bottom: 2px solid var(--color-ink); white-space: nowrap; }
+.tbl td { padding: .55rem .75rem; border-bottom: 1px solid var(--color-line); font-variant-numeric: tabular-nums; }
+.tbl tr:last-child td { border-bottom: 0; }
+.tbl .num { text-align: right; }
+
+/* Keep running text at a readable measure inside wide cards */
+.card p, .card li { max-width: 72ch; }
+
+/* Effort lane: the coloured bar on the left of every session */
+.lane { border-left: 6px solid var(--lane, var(--color-strength)); }
+}
+
+/* Recharts */
+.recharts-cartesian-axis-tick-value { fill: var(--color-axis); font-size: 12px; font-family: var(--font-sans); }
+
+/* The one load moment: the week's bars rise from the baseline. */
+@keyframes rise { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+.rise { transform-origin: bottom; animation: rise .55s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i, 0) * 45ms); }
 
 /* Live indicator: one ripple each time fresh data lands */
 @keyframes live-ping { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(3.2); opacity: 0; } }
 .live-ping { animation: live-ping 1s ease-out 1; }
-@media (prefers-reduced-motion: reduce) { .live-ping { animation: none; opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) { .rise, .live-ping { animation: none; } .live-ping { opacity: 0; } }

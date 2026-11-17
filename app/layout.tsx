@@ -1,6 +1,12 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
+import "@fontsource/barlow/400.css";
+import "@fontsource/barlow/500.css";
+import "@fontsource/barlow/600.css";
+import "@fontsource/barlow/700.css";
+import "@fontsource/barlow-condensed/700.css";
+import "@fontsource/barlow-condensed/800.css";
 import "./globals.css";
 import { BottomNav, Sidebar } from "./_c/BottomNav";
 import { LiveRefresh } from "./_c/LiveRefresh";
@@ -10,7 +16,7 @@ import { getStore } from "@/lib/storage";
 import type { Account, Profile } from "@/lib/types";
 
 export const metadata: Metadata = { title: "RunBabyRun", description: "A race training plan built from your own Strava runs: 5K, 10K, half marathon or marathon." };
-export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#0f766e" };
+export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#101b3b" };
 
 async function who(): Promise<{ name: string; hasPlan: boolean; live: LiveConfig | null } | null> {
   try {
@@ -33,10 +39,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="min-h-dvh antialiased">
         {nav && <Sidebar name={me!.name} />}
         <div className={nav ? "lg:pl-64" : ""}>
-          <main className={`mx-auto px-4 pt-4 lg:px-8 lg:pt-8 ${nav ? "max-w-xl pb-28 lg:max-w-5xl lg:pb-12" : "max-w-3xl pb-10"}`}>{children}</main>
+          <main className={`mx-auto px-4 pt-4 lg:px-8 lg:pt-8 ${nav ? "max-w-xl pb-28 lg:max-w-5xl lg:pb-12" : "max-w-4xl pb-10"}`}>{children}</main>
           {!nav && (
-            <footer className="mx-auto max-w-3xl px-4 pb-10 text-xs text-muted">
-              <div className="flex flex-wrap gap-x-4 gap-y-1 border-t border-line pt-4">
+            <footer className="mx-auto max-w-4xl px-4 pb-10 text-sm text-muted lg:px-8">
+              <div className="flex flex-wrap gap-x-4 gap-y-1 border-t-2 border-ink pt-4">
                 <Link href="/" className="hover:underline">Home</Link>
                 <Link href="/about" className="hover:underline">How plans are built</Link>
                 <Link href="/privacy" className="hover:underline">Privacy</Link>

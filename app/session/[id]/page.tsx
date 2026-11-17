@@ -26,20 +26,20 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
   const canSkip = !a && s.date >= c.today && s.kind !== "race";
   return (
     <>
-      <PageTitle title={s.title} sub={`${weekdayShort(s.date)} ${fmtDate(s.date)} · Week ${s.week} · ${s.phase}${s.deload ? " · easier week" : ""}`} back={`/week?w=${c.plan.weeks.some((w) => w.n === s.week && c.plan!.sessions.some((x) => x.id === s.id)) ? s.week : ""}`} actions={<StatusPill status={st} />} />
+      <PageTitle title={s.title} sub={`${weekdayShort(s.date)} ${fmtDate(s.date)}, Week ${s.week}, ${s.phase}${s.deload ? ", easier week" : ""}`} back={`/week?w=${c.plan.weeks.some((w) => w.n === s.week && c.plan!.sessions.some((x) => x.id === s.id)) ? s.week : ""}`} actions={<StatusPill status={st} />} />
       <Panel className="mb-4">
         <div className="flex flex-wrap items-center gap-3">
           <TargetBadge kind={s.kind} />
-          <span className="text-sm text-muted tnum">{fmtKm(s.distance_km)}{s.est_duration_min ? ` · about ${s.est_duration_min} min` : ""}</span>
+          <span className="text-sm text-muted tnum">{fmtKm(s.distance_km)}{s.est_duration_min ? `, about ${s.est_duration_min} min` : ""}</span>
         </div>
         <SegmentList segments={s.segments} zones={c.zones} />
         {s.summary && <p className="mt-3 text-sm text-ink-2">{s.summary}</p>}
       </Panel>
 
       {a && score && (
-        <Panel title="How it went" sub={<>{a.name} · {fmtKm(a.distance_m / 1000)} in {fmtDuration(a.moving_time_s)} · {fmtPace(a.moving_time_s / (a.distance_m / 1000))} /km{a.avg_hr ? ` · average HR ${Math.round(a.avg_hr)}` : ""}</>} className="mb-4"
+        <Panel title="How it went" sub={<>{a.name}, {fmtKm(a.distance_m / 1000)} in {fmtDuration(a.moving_time_s)}, {fmtPace(a.moving_time_s / (a.distance_m / 1000))} /km{a.avg_hr ? `, average HR ${Math.round(a.avg_hr)}` : ""}</>} className="mb-4"
           right={<a href={`https://www.strava.com/activities/${a.id}`} target="_blank" rel="noreferrer" className="text-sm font-semibold underline" style={{ color: "#fc4c02" }}>View on Strava</a>}>
-          <div className="flex justify-around rounded-xl bg-slate-50 py-4">
+          <div className="flex justify-around rounded-[4px] bg-wash py-4">
             <ScoreRing score={score.overall_score} label="overall" />
             <ScoreRing score={score.distance_score} label="distance" />
             <ScoreRing score={score.hr_score} label="heart rate" />

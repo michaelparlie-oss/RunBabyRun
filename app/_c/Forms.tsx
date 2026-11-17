@@ -30,7 +30,7 @@ export function AutoSync({ enabled }: { enabled: boolean }) {
     setMsg("Checking Strava for new runs…");
     syncNow().then((r) => { setMsg(r.added ? r.message : null); }).catch(() => setMsg(null));
   }, [enabled]);
-  return msg ? <p role="status" className="mb-3 rounded-lg bg-white px-3 py-1.5 text-center text-xs text-muted">{msg}</p> : null;
+  return msg ? <p role="status" className="mb-3 rounded-[4px] bg-white px-3 py-1.5 text-center text-xs text-muted">{msg}</p> : null;
 }
 
 function Result({ state }: { state: ActionState }) {

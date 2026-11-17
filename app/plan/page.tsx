@@ -49,9 +49,9 @@ export default async function PlanPage({ searchParams }: { searchParams: Promise
               {plan.weeks.map((w) => {
                 const actual = c.acts.filter((a) => a.local_date >= w.start && a.local_date < addDays(w.start, 7)).reduce((t, a) => t + a.distance_m / 1000, 0);
                 return (
-                  <tr key={w.n} className={w.start === thisMon ? "bg-accent-soft" : ""}>
-                    <td><Link href={`/week?w=${w.n}`} className="font-semibold text-accent hover:underline">Week {w.n}</Link>{w.start === thisMon ? " (now)" : ""}</td>
-                    <td>{fmtDate(w.start)}</td><td>{w.phase}{w.deload ? " · easier" : ""}</td>
+                  <tr key={w.n} className={w.start === thisMon ? "bg-hivis/40" : ""}>
+                    <td><Link href={`/week?w=${w.n}`} className="font-semibold underline underline-offset-4">Week {w.n}</Link>{w.start === thisMon ? " (now)" : ""}</td>
+                    <td>{fmtDate(w.start)}</td><td>{w.phase}{w.deload ? ", easier" : ""}</td>
                     <td className="num">{w.planned_km}</td><td className="num">{w.long_km || "–"}</td><td className="num">{w.start <= c.today ? actual.toFixed(1) : ""}</td>
                   </tr>
                 );

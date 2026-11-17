@@ -23,11 +23,11 @@ function useActive() {
 export function BottomNav() {
   const active = useActive();
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden" aria-label="Main">
+    <nav className="fixed inset-x-0 bottom-0 z-20 border-t-2 border-ink bg-white pb-[env(safe-area-inset-bottom)] lg:hidden" aria-label="Main">
       <ul className="mx-auto grid max-w-xl grid-cols-5">
         {main.map((i) => (
           <li key={i.href}>
-            <Link href={i.href} aria-current={active(i.href) ? "page" : undefined} className={`flex flex-col items-center gap-0.5 py-2 text-[11px] font-semibold ${active(i.href) ? "text-accent" : "text-muted"}`}>
+            <Link href={i.href} aria-current={active(i.href) ? "page" : undefined} className={`flex flex-col items-center gap-0.5 border-t-4 py-2 text-xs font-semibold ${active(i.href) ? "border-hivis-deep bg-wash text-ink" : "border-transparent text-muted"}`}>
               <Icon d={i.icon} className="h-6 w-6" />
               {i.label}
             </Link>
@@ -41,28 +41,28 @@ export function BottomNav() {
 export function Sidebar({ name }: { name: string }) {
   const active = useActive();
   const Item = ({ href, label, icon }: { href: string; label: string; icon: string }) => (
-    <Link href={href} aria-current={active(href) ? "page" : undefined} className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active(href) ? "bg-accent-soft text-accent-strong" : "text-ink-2 hover:bg-slate-100 hover:text-ink"}`}>
+    <Link href={href} aria-current={active(href) ? "page" : undefined} className={`flex items-center gap-3 border-l-4 px-4 py-2.5 text-[15px] font-semibold ${active(href) ? "border-hivis bg-white/10 text-white" : "border-transparent text-white/70 hover:text-white"}`}>
       <Icon d={icon} />
       <span className="flex-1">{label}</span>
     </Link>
   );
   return (
-    <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col border-r border-line bg-white lg:flex">
+    <aside className="fixed inset-y-0 left-0 z-20 hidden w-64 flex-col bg-ink text-white lg:flex">
       <div className="flex items-center gap-3 px-5 py-5">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/icon.svg" alt="" className="h-9 w-9 rounded-lg" />
+        <img src="/icon.svg" alt="" className="h-9 w-9 border border-white/20" />
         <div>
-          <div className="text-sm font-extrabold leading-tight">RunBabyRun</div>
-          <div className="text-xs text-muted">{name}</div>
+          <div className="display text-2xl">RunBabyRun</div>
+          <div className="text-xs text-white/70">{name}</div>
         </div>
       </div>
-      <nav className="flex-1 space-y-0.5 overflow-y-auto px-3" aria-label="Main">
-        <div className="label px-3 pb-1 pt-2">Training</div>
+      <nav className="flex-1 overflow-y-auto" aria-label="Main">
+        
         {main.map((i) => <Item key={i.href} {...i} />)}
-        <div className="label px-3 pb-1 pt-5">Reference</div>
+        <div className="mx-5 my-3 border-t border-white/20" />
         {extra.map((i) => <Item key={i.href} {...i} />)}
       </nav>
-      <p className="px-5 pb-4 text-[11px] text-muted">Powered by Strava</p>
+      <p className="px-5 pb-4 text-xs text-white/60">Powered by Strava</p>
     </aside>
   );
 }

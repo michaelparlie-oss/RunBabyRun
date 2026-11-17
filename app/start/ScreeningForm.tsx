@@ -26,7 +26,7 @@ const Field = ({ label, hint, children }: { label: string; hint?: string; childr
 );
 function Choice({ name, value, state, set, children }: { name: string; value: string; state: string; set: (v: string) => void; children: React.ReactNode }) {
   return (
-    <label className={`flex cursor-pointer items-start gap-2 rounded-xl border p-3 text-sm ${state === value ? "border-accent bg-accent-soft" : "border-line bg-white"}`}>
+    <label className={`flex cursor-pointer items-start gap-2 rounded-[4px] border p-3 text-sm ${state === value ? "border-ink bg-hivis/40" : "border-line bg-white"}`}>
       <input type="radio" name={name} value={value} checked={state === value} onChange={() => set(value)} className="mt-0.5" />
       <span>{children}</span>
     </label>
@@ -104,7 +104,7 @@ export function ScreeningForm({ sug, questions, niggles, prev, minDate, maxDate 
           <div className="text-sm font-medium">Running days (3 to 6)</div>
           <div className="mt-2 flex flex-wrap gap-2">
             {DAYS.map((d, i) => (
-              <label key={d} className={`cursor-pointer rounded-lg border px-3 py-2 text-sm font-semibold ${days.includes(i) ? "border-accent bg-accent text-white" : "border-line bg-white"}`}>
+              <label key={d} className={`cursor-pointer rounded-[4px] border px-3 py-2 text-sm font-semibold ${days.includes(i) ? "border-ink bg-ink text-white" : "border-line bg-white"}`}>
                 <input type="checkbox" name="run_days" value={i} checked={days.includes(i)} onChange={() => toggle(i)} className="sr-only" />{d}
               </label>
             ))}
@@ -129,7 +129,7 @@ export function ScreeningForm({ sug, questions, niggles, prev, minDate, maxDate 
       <Step n={4} title="Health check" sub="Running hard is safe for most people, but a few should see a doctor first. Answer honestly; a yes does not block you, it changes the advice.">
         <div className="space-y-2">
           {questions.map((q) => (
-            <label key={q.id} className="flex items-start gap-3 rounded-xl border border-line bg-white p-3 text-sm">
+            <label key={q.id} className="flex items-start gap-3 rounded-[4px] border border-line bg-white p-3 text-sm">
               <input type="checkbox" name="flags" value={q.id} defaultChecked={prev?.health.flags.includes(q.id)} className="mt-0.5 h-4 w-4" />
               <span>{q.text} <span className="text-muted">(tick for yes)</span></span>
             </label>
@@ -139,7 +139,7 @@ export function ScreeningForm({ sug, questions, niggles, prev, minDate, maxDate 
           <div className="text-sm font-medium">Anything sore or injured right now? (optional)</div>
           <div className="mt-2 flex flex-wrap gap-2">
             {niggles.map((n) => (
-              <label key={n.id} className="flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm">
+              <label key={n.id} className="flex items-center gap-2 rounded-[4px] border border-line bg-white px-3 py-2 text-sm">
                 <input type="checkbox" name="niggles" value={n.id} defaultChecked={prev?.health.niggles.includes(n.id)} />{n.label}
               </label>
             ))}

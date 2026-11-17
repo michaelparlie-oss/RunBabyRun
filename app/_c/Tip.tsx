@@ -17,7 +17,7 @@ export function Tip({ label, children, className = "" }: { label: React.ReactNod
         {label}
       </button>
       {open && (
-        <span role="tooltip" className="absolute left-0 z-30 mt-1 block w-64 rounded-lg border border-line bg-white p-3 text-left text-xs font-normal normal-case tracking-normal text-ink shadow-lg">
+        <span role="tooltip" className="absolute left-0 z-30 mt-1 block w-64 rounded-[4px] border border-line bg-white p-3 text-left text-xs font-normal normal-case tracking-normal text-ink shadow-lg">
           {children}
         </span>
       )}

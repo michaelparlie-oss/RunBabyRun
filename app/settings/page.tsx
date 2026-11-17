@@ -34,7 +34,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
         </Panel>
 
         {p && (
-          <Panel title="Your plan" sub={`${p.race.name || RACES[p.race.key].label} on ${fmtDate(p.race.date, { day: "numeric", month: "short", year: "numeric" })} · ${p.race.goal === "time" && p.race.goal_time_s ? `goal ${fmtDuration(p.race.goal_time_s)}` : "goal: finish"}`}>
+          <Panel title="Your plan" sub={`${p.race.name || RACES[p.race.key].label} on ${fmtDate(p.race.date, { day: "numeric", month: "short", year: "numeric" })}, ${p.race.goal === "time" && p.race.goal_time_s ? `goal ${fmtDuration(p.race.goal_time_s)}` : "goal: finish"}`}>
             <div className="flex flex-wrap gap-2">
               <form action={rebuildPlan}><Submit className="btn" pendingText="Rebuilding…">Rebuild from today</Submit></form>
               <Link href="/start" className="btn">Redo the questionnaire</Link>

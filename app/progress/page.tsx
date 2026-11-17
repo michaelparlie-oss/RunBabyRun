@@ -53,7 +53,7 @@ export default async function ProgressPage() {
               <thead><tr><th>Week of</th><th className="num">Planned</th><th className="num">Run</th><th className="num">Longest</th></tr></thead>
               <tbody>
                 {rows.map((r) => (
-                  <tr key={r.start} className={r.start === thisMon ? "bg-accent-soft" : ""}>
+                  <tr key={r.start} className={r.start === thisMon ? "bg-hivis/40" : ""}>
                     <td className="whitespace-nowrap">{fmtDate(r.start)}</td>
                     <td className="num">{r.planned.toFixed(1)}</td><td className="num">{r.future ? "" : r.actual.toFixed(1)}</td><td className="num">{r.future || !r.long ? "" : r.long.toFixed(1)}</td>
                   </tr>

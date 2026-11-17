@@ -17,7 +17,7 @@ export default async function StrengthPage({ params }: { params: Promise<{ id: s
   const st = c.status.get(s.id) ?? "pending";
   return (
     <>
-      <PageTitle title={s.title} sub={`${weekdayShort(s.date)} ${fmtDate(s.date)} · about ${t.minutes} min`} back={`/week?w=${s.week}`} actions={<StatusPill status={st} />} />
+      <PageTitle title={s.title} sub={`${weekdayShort(s.date)} ${fmtDate(s.date)}, about ${t.minutes} min`} back={`/week?w=${s.week}`} actions={<StatusPill status={st} />} />
       <Panel title="Today's menu" sub={t.intent} className="mb-4">
         <StrengthTable t={t} deload={s.deload} template={s.template!} />
         <ul className="mt-3 list-disc space-y-1 pl-5 text-xs text-muted">

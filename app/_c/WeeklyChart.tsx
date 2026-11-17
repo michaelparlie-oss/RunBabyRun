@@ -14,7 +14,7 @@ function TooltipCard({ active, payload, label }: { active?: boolean; payload?: {
   const planned = payload.find((p) => p.dataKey === "planned")?.value ?? 0;
   const actual = payload.find((p) => p.dataKey === "actual")?.value;
   return (
-    <div className="rounded-lg border border-line bg-white px-3 py-2 text-xs shadow-lg">
+    <div className="border-2 border-ink bg-white px-3 py-2 text-xs">
       <div className="font-semibold">{label}</div>
       <div className="mt-1 tnum">Planned: {planned.toFixed(1)} km</div>
       {actual != null && <div className="tnum" style={{ color: "var(--color-series-1)" }}>Run: {actual.toFixed(1)} km</div>}
@@ -42,9 +42,9 @@ export function WeeklyChart({ rows, thisMon }: { rows: Row[]; thisMon: string })
           <XAxis dataKey="label" tickLine={false} axisLine={false} minTickGap={24} />
           <YAxis tickLine={false} axisLine={false} width={32} tickFormatter={(v: number) => `${v}`} />
           <Tooltip content={<TooltipCard />} />
-          <ReferenceLine x={shortDate(thisMon)} stroke="var(--color-axis)" strokeDasharray="3 3" />
-          <Area type="monotone" dataKey="planned" stroke="var(--color-axis)" strokeWidth={1.5} fill="url(#planned-fill)" isAnimationActive animationDuration={900} />
-          <Area type="monotone" dataKey="actualVisible" stroke="var(--color-series-1)" strokeWidth={2.5} fill="url(#actual-fill)" isAnimationActive animationDuration={1100} animationEasing="ease-out" connectNulls={false} />
+          <ReferenceLine x={shortDate(thisMon)} stroke="var(--color-ink)" strokeWidth={2} label={{ value: "now", position: "insideTopRight", fill: "var(--color-ink)", fontSize: 12, fontWeight: 600 }} />
+          <Area type="stepAfter" dataKey="planned" stroke="var(--color-axis)" strokeWidth={1.5} fill="url(#planned-fill)" isAnimationActive animationDuration={500} />
+          <Area type="stepAfter" dataKey="actualVisible" stroke="var(--color-series-1)" strokeWidth={2.5} fill="url(#actual-fill)" isAnimationActive animationDuration={500} connectNulls={false} />
         </AreaChart>
       </ResponsiveContainer>
     </div>
