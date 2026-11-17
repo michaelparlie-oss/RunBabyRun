@@ -21,15 +21,15 @@ export function WeekStrip({ days, plannedKm, doneKm, caption }: { days: StripDay
       </div>
       <ol className="mt-4 grid grid-cols-7 gap-1.5 sm:gap-3">
         {days.map((d, i) => {
-          const color = d.effort ? EFFORT[d.effort].color : "var(--color-line)";
+          const color = d.effort ? EFFORT[d.effort].color : "var(--color-line)", ink = d.effort ? EFFORT[d.effort].ink : "var(--color-line)";
           const h = (km: number) => `${Math.max(km > 0 ? 8 : 0, (km / max) * 100)}%`;
           const label = `${d.dow}: ${d.effort ? `${EFFORT[d.effort].label.toLowerCase()} ${d.plannedKm ? `${d.plannedKm} km planned` : ""}` : "rest"}${d.doneKm ? `, ${d.doneKm.toFixed(1)} km run` : ""}${d.strength ? ", strength" : ""}`;
           const body = (
             <>
-              <div className="relative h-28 border-b-2 border-ink sm:h-36">
-                {d.plannedKm > 0 && <div className="rise absolute inset-x-0 bottom-0 border-2 border-b-0" style={{ height: h(d.plannedKm), borderColor: color, borderStyle: d.future ? "dashed" : "solid", ["--i" as string]: i }} />}
-                {d.doneKm > 0 && <div className="rise absolute inset-x-0 bottom-0" style={{ height: h(d.doneKm), background: color, ["--i" as string]: i }} />}
-                {d.strength && <span className="absolute inset-x-0 top-0 mx-auto h-1.5 w-1.5 rounded-full" style={{ background: "var(--color-strength)" }} />}
+              <div className="relative h-28 border-b-2 border-line-strong sm:h-36">
+                {d.plannedKm > 0 && <div className="rise absolute inset-x-0 bottom-0 border-2 border-b-0" style={{ height: h(d.plannedKm), borderColor: ink, background: d.future ? "transparent" : "var(--color-wash)", borderStyle: d.future ? "dashed" : "solid", ["--i" as string]: i }} />}
+                {d.doneKm > 0 && <div className="rise absolute inset-x-0 bottom-0" style={{ height: h(d.doneKm), background: color, boxShadow: `inset 0 0 0 1.5px ${ink}`, ["--i" as string]: i }} />}
+                {d.strength && <span className="absolute inset-x-0 top-0 mx-auto h-1.5 w-1.5 rounded-full" style={{ background: "var(--color-strength-ink)" }} />}
               </div>
               <div className={`mt-1.5 text-center text-xs font-semibold sm:text-sm ${d.today ? "" : "text-muted"}`}><span className={d.today ? "mark" : ""}>{d.dow}</span></div>
               <div className="text-center text-xs text-muted tnum">{d.doneKm ? d.doneKm.toFixed(1) : d.plannedKm ? d.plannedKm : "rest"}</div>

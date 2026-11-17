@@ -27,7 +27,7 @@ export function AuthShell({ title, error, notice, children, foot }: { title: str
         {error && <Flash ok={false}>{AUTH_ERRORS[error] ?? "Something went wrong. Try again."}</Flash>}
       </div>
       <div className="mt-5">{children}</div>
-      {foot && <p className="mt-6 border-t-2 border-ink pt-4 text-sm">{foot}</p>}
+      {foot && <p className="mt-6 border-t-2 border-line-strong pt-4 text-sm">{foot}</p>}
     </div>
   );
 }

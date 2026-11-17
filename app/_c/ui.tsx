@@ -4,8 +4,8 @@ import { fmtDuration, fmtHrRange, fmtKm, fmtPaceRange } from "@/lib/util/format"
 import { Tip } from "./Tip";
 
 const ZONE_COLORS: Record<string, string> = {
-  E: "var(--color-easy)", L: "var(--color-long)", REC: "var(--color-strength)", RP: "var(--color-ink)",
-  T: "var(--color-warn)", I: "var(--color-hard)", ST: "var(--color-test)", H: "var(--color-hard)", RACE: "var(--color-ink)",
+  E: "var(--color-easy)", L: "var(--color-long)", REC: "var(--color-strength)", RP: "var(--color-race)",
+  T: "var(--color-hivis-deep)", I: "var(--color-hard)", ST: "var(--color-test)", H: "var(--color-hard)", RACE: "var(--color-race)",
 };
 const TARGET: Record<Zone["primary_target"], string> = { HR: "heart rate", pace: "pace (heart rate is a ceiling)", feel: "effort", plan: "the pacing notes" };
 
@@ -88,7 +88,7 @@ export function ScoreRing({ score, label, size = 64 }: { score: number | null; l
 
 export function PageTitle({ title, sub, back, actions }: { title: string; sub?: React.ReactNode; back?: string; actions?: React.ReactNode }) {
   return (
-    <header className="mb-5 border-b-2 border-ink pb-3 lg:mb-7">
+    <header className="mb-5 border-b-2 border-line-strong pb-3 lg:mb-7">
       {back && <Link href={back} className="mb-2 inline-block text-sm font-semibold underline underline-offset-4">Back</Link>}
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="min-w-0">
@@ -120,8 +120,8 @@ export function Panel({ title, sub, right, children, className = "" }: { title?:
 
 export function Kpi({ label, value, unit, sub }: { label: string; value: React.ReactNode; unit?: string; sub?: React.ReactNode }) {
   return (
-    <div className="border-t-2 border-ink pt-2">
-      <div className="numeral text-4xl">{value}{unit && <span className="ml-1.5 font-sans text-sm font-semibold text-muted">{unit}</span>}</div>
+    <div className="stat">
+      <div className="numeral">{value}{unit && <span className="ml-1.5 font-sans text-sm font-semibold text-muted">{unit}</span>}</div>
       <div className="mt-1 text-sm font-semibold">{label}</div>
       {sub && <div className="text-xs text-muted">{sub}</div>}
     </div>

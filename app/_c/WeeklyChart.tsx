@@ -14,7 +14,7 @@ function TooltipCard({ active, payload, label }: { active?: boolean; payload?: {
   const planned = payload.find((p) => p.dataKey === "planned")?.value ?? 0;
   const actual = payload.find((p) => p.dataKey === "actual")?.value;
   return (
-    <div className="border-2 border-ink bg-white px-3 py-2 text-xs">
+    <div className="border border-line-strong bg-white px-3 py-2 text-xs">
       <div className="font-semibold">{label}</div>
       <div className="mt-1 tnum">Planned: {planned.toFixed(1)} km</div>
       {actual != null && <div className="tnum" style={{ color: "var(--color-series-1)" }}>Run: {actual.toFixed(1)} km</div>}

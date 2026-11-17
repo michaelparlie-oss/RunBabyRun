@@ -75,10 +75,12 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
 
         <Panel title="Your data">
           <div className="flex flex-wrap gap-2">
-            <a href="/api/export" className="btn">Download my data (JSON)</a>
+            <a href="/api/export?format=csv" className="btn">Export runs (CSV)</a>
+            <a href="/api/export?format=plan" className="btn">Export plan (CSV)</a>
+            <a href="/api/export" className="btn">Everything (JSON)</a>
             <form action="/api/logout" method="post"><button className="btn">Sign out</button></form>
           </div>
-          <p className="mt-3 text-xs text-muted">The download has everything stored about you except your password and Strava tokens. See the <Link href="/privacy" className="underline">privacy page</Link>.</p>
+          <p className="mt-3 text-xs text-muted">The CSV files open in Excel or Google Sheets. The JSON download has everything stored about you except your password and Strava tokens. See the <Link href="/privacy" className="underline">privacy page</Link>.</p>
         </Panel>
 
         <Panel title="Delete my account" className="lg:col-span-2">

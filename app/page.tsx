@@ -47,7 +47,7 @@ function Landing({ deleted }: { deleted?: boolean }) {
           <p className="mt-2 text-sm text-muted">Bars are distance, colours are effort. A run fills in when you do it, and the plan warns you before a risky jump.</p>
         </div>
         <section>
-          <h2 className="h2 border-b-2 border-ink pb-2">Two ways to track your runs</h2>
+          <h2 className="h2 border-b-2 border-line-strong pb-2">Two ways to track your runs</h2>
           <div className="border-b border-line py-4">
             <h3 className="text-2xl font-bold uppercase">With Strava</h3>
             <p className="mt-1 text-sm text-ink-2">Runs sync from your watch or phone. Each one is matched to the plan and scored against its pace and heart-rate target.</p>
@@ -60,7 +60,7 @@ function Landing({ deleted }: { deleted?: boolean }) {
       </div>
 
       <section>
-        <h2 className="h2 border-b-2 border-ink pb-2">How it works</h2>
+        <h2 className="h2 border-b-2 border-line-strong pb-2">How it works</h2>
         <ol className="grid gap-x-8 sm:grid-cols-3">
           {[
             ["Sign up", "Create an account with your email, then choose Strava or manual tracking."],
@@ -114,7 +114,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
 
   return (
     <>
-      <header className="mb-4 flex flex-wrap items-end justify-between gap-3 border-b-2 border-ink pb-3">
+      <header className="mb-4 flex flex-wrap items-end justify-between gap-3 border-b-2 border-line-strong pb-3">
         <div>
           <p className="text-sm font-semibold text-ink-2">{fmtDate(c.today, { weekday: "long", day: "numeric", month: "long" })}</p>
           <h1 className="display mt-1 text-4xl lg:text-5xl">{over ? "Race done" : <><span className="mark">{days}</span> {days === 1 ? "day" : "days"} to go</>}</h1>
@@ -138,7 +138,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
           {!over && todays.length === 0 && (
             <div className="block-ink p-5 lg:p-6">
               <h2 className="display text-6xl lg:text-7xl">Rest day</h2>
-              <p className="mt-3 max-w-prose text-white/85">Rest is when training turns into fitness. A walk or gentle mobility is fine.</p>
+              <p className="mt-3 max-w-prose text-ink-2">Rest is when training turns into fitness. A walk or gentle mobility is fine.</p>
             </div>
           )}
           {todayRun && <RunHero s={todayRun} c={c} />}

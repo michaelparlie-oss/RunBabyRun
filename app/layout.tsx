@@ -16,7 +16,7 @@ import { getStore } from "@/lib/storage";
 import type { Profile, User } from "@/lib/types";
 
 export const metadata: Metadata = { title: "RunBabyRun", description: "A day-by-day race training plan for a 5K, 10K, half marathon or marathon. Track runs with Strava or by hand." };
-export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#101b3b" };
+export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#e9e4f7" };
 
 async function who(): Promise<{ name: string; hasPlan: boolean; live: LiveConfig | null } | null> {
   try {
@@ -42,7 +42,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <main className={`mx-auto px-4 pt-4 lg:px-8 lg:pt-8 ${nav ? "max-w-xl pb-28 lg:max-w-5xl lg:pb-12" : "max-w-4xl pb-10"}`}>{children}</main>
           {!nav && (
             <footer className="mx-auto max-w-4xl px-4 pb-10 text-sm text-muted lg:px-8">
-              <div className="flex flex-wrap gap-x-4 gap-y-1 border-t-2 border-ink pt-4">
+              <div className="flex flex-wrap gap-x-4 gap-y-1 border-t-2 border-line-strong pt-4">
                 <Link href="/" className="hover:underline">Home</Link>
                 <Link href="/about" className="hover:underline">How plans are built</Link>
                 <Link href="/privacy" className="hover:underline">Privacy</Link>

@@ -81,3 +81,21 @@ athlete to it, and one Strava athlete can belong to only one account. After sign
 Switching to manual removes Strava-imported runs (Strava's terms) and keeps hand-entered ones. Deleting the account
 asks for the password, which both confirms intent and yields the token needed to delete the Supabase login itself
 through `delete_own_account()`, so no Supabase secret key has to live on the site.
+
+### Plans are held to recorded history
+
+Before any plan is generated or rebuilt, `lib/analysis.ts` reads the runner's stored runs in rolling 7-day blocks and
+`applyEvidence` adjusts the answers. It only ever lowers them:
+
+- Starting weekly distance is the lower of what was entered and what was sustained: the 4-week average, or the lower
+  of the 4- and 8-week averages once eight weeks of history exist, so a recent ramp is not treated as a base.
+- The long run builds from the longest run of the last 30 days if that is shorter than the answer.
+- Experience drops one level when the 8-week average is far below what that level assumes.
+- A gap of more than 10 days, a last week more than 1.3 times the 4-week average, or running in fewer than 6 of the
+  last 8 weeks switches on the gentler build-up (about 6% growth, an easier week every third week).
+- The biggest week is capped at the greater of 1.8 times the starting volume and starting volume + 12 km.
+
+It needs at least three weeks of history and four runs; with less, the runner's answers stand. These thresholds are
+coaching judgement, chosen to err low. The load ratio in particular is shown on the Analysis page as a descriptive
+guide and is labelled as contested; it is not presented as an injury predictor. The plan shows a notice saying what
+was measured and what was changed.

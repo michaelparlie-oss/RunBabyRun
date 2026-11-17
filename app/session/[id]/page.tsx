@@ -43,7 +43,7 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
           right={a.manual
             ? <form action={removeRun}><input type="hidden" name="id" value={a.id} /><Submit className="text-sm font-semibold underline underline-offset-4" pendingText="Removing…">Remove this entry</Submit></form>
             : <a href={`https://www.strava.com/activities/${a.id}`} target="_blank" rel="noreferrer" className="text-sm font-semibold underline" style={{ color: "#fc4c02" }}>View on Strava</a>}>
-          <div className="flex justify-around rounded-[4px] bg-wash py-4">
+          <div className="flex justify-around rounded-lg bg-wash py-4">
             <ScoreRing score={score.overall_score} label="overall" />
             <ScoreRing score={score.distance_score} label="distance" />
             <ScoreRing score={score.hr_score} label="heart rate" />

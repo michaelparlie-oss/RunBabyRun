@@ -21,14 +21,14 @@ export function RunHero({ s, c }: { s: Session; c: Ctx }) {
   const a = c.actFor.get(s.id);
   const e = EFFORT[effortOf(s)];
   return (
-    <article className="block-ink overflow-hidden">
+    <article className="overflow-hidden rounded-[10px] border border-line" style={{ background: e.color }}>
       <div className="px-4 pb-4 pt-4 lg:px-6 lg:pt-5">
-        <div className="flex flex-wrap items-center justify-between gap-2 text-sm font-semibold text-white/80">
-          <span className="inline-flex items-center gap-2"><i className="inline-block h-3 w-3" style={{ background: s.kind === "race" ? "var(--color-hivis)" : e.color }} />{e.label} run, {when(s)}</span>
-          <StatusPill status={st} invert />
+        <div className="flex flex-wrap items-center justify-between gap-2 text-sm font-semibold">
+          <span>{e.label} run, {when(s)}</span>
+          <StatusPill status={st} />
         </div>
-        <h2 className="display mt-3 text-5xl text-white sm:text-6xl lg:text-7xl">{s.title}</h2>
-        <p className="mt-3 text-lg text-white/90 tnum">{fmtKm(s.distance_km)}{s.est_duration_min ? `, about ${s.est_duration_min} min` : ""}{s.optional ? ", optional" : ""}</p>
+        <h2 className="display mt-3 text-5xl sm:text-6xl lg:text-7xl">{s.title}</h2>
+        <p className="mt-3 text-lg tnum">{fmtKm(s.distance_km)}{s.est_duration_min ? `, about ${s.est_duration_min} min` : ""}{s.optional ? ", optional" : ""}</p>
       </div>
       <div className="bg-hivis px-4 py-2.5 text-base font-semibold text-ink lg:px-6">{s.kind === "race" ? "Race day: follow the pacing notes" : s.kind === "test" ? "Test day: even, honest effort" : s.kind === "easy" || s.kind === "long" ? "Heart rate decides today: keep it easy" : "Pace decides today: heart rate is a ceiling"}</div>
       <div className="bg-card px-4 pb-4 pt-1 text-ink lg:px-6">

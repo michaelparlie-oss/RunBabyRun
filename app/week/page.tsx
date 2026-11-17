@@ -26,14 +26,14 @@ export default async function WeekPage({ searchParams }: { searchParams: Promise
           {n < weeks.length && <Link className="btn" href={`/week?w=${n + 1}`}>Later</Link>}
         </>}
       />
-      {w.deload && <p className="mb-3 rounded-[4px] border-l-[6px] border-long bg-card px-4 py-3 text-sm"><b>Easier week.</b> About a quarter less running and half the strength sets. This is where fitness is absorbed, so resist adding more.</p>}
+      {w.deload && <p className="mb-3 rounded-lg border-l-[6px] border-long bg-card px-4 py-3 text-sm"><b>Easier week.</b> About a quarter less running and half the strength sets. This is where fitness is absorbed, so resist adding more.</p>}
       <div className="space-y-3">
         {Array.from({ length: 7 }, (_, d) => addDays(w.start, d)).map((date, d) => {
           const day = inWeek.filter((s) => s.date === date);
           return (
             <section key={date} aria-label={DOW_LONG[d]}>
               {day.length === 0 ? (
-                <div className={`rounded-[4px] border border-dashed border-line px-4 py-2 text-sm text-muted ${date === c.today ? "bg-white" : ""}`}>{DOW_LONG[d]} {fmtDate(date)}, rest</div>
+                <div className={`rounded-lg border border-dashed border-line px-4 py-2 text-sm text-muted ${date === c.today ? "bg-white" : ""}`}>{DOW_LONG[d]} {fmtDate(date)}, rest</div>
               ) : (
                 <div className="space-y-3">{day.map((s) => (s.category === "run" ? <RunCard key={s.id} s={s} c={c} /> : <StrengthCard key={s.id} s={s} c={c} />))}</div>
               )}

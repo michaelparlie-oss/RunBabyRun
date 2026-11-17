@@ -9,42 +9,45 @@
   --font-sans: "Barlow", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   --font-display: "Barlow Condensed", "Barlow", "Arial Narrow", Arial, sans-serif;
 
-  --color-page: #eef1f5;
+  /* Pastel surfaces with one dark ink for text, so everything stays readable. */
+  --color-page: #f6f4fb;
   --color-card: #ffffff;
-  --color-ink: #101b3b;
-  --color-ink-2: #3d4a70;
-  --color-muted: #5f6b8c;
-  --color-faint: #98a2bd;
-  --color-line: #d5dae6;
-  --color-line-strong: #b6bed2;
-  --color-wash: #f5f7fa;
+  --color-ink: #2e3154;
+  --color-ink-2: #555a80;
+  --color-muted: #6f7496;
+  --color-faint: #a9adc6;
+  --color-line: #e3e0ef;
+  --color-line-strong: #c9c5dc;
+  --color-wash: #f3f1f9;
+  --color-panel: #e9e4f7; /* lilac block: hero, sidebar */
 
-  --color-hivis: #e4f222;
-  --color-hivis-deep: #c5d400;
+  --color-hivis: #ffe9a3; /* butter highlighter */
+  --color-hivis-deep: #f3cf5b;
 
-  --color-accent: #1d3fbf;
-  --color-accent-strong: #15309a;
-  --color-accent-soft: #e6ecff;
+  --color-accent: #5b62b8;
+  --color-accent-strong: #474d9c;
+  --color-accent-soft: #e8e9fb;
 
-  /* effort colours */
-  --color-easy: #12a594;
-  --color-long: #2f6fed;
-  --color-hard: #e5386d;
-  --color-test: #8b5cf6;
-  --color-strength: #64708f;
+  /* effort colours: a pastel fill and a deeper ink of the same hue for outlines and small marks */
+  --color-easy: #a8e0cf;      --color-easy-ink: #3f9c84;
+  --color-long: #abcdf7;      --color-long-ink: #4b7fc4;
+  --color-hard: #f7b5c8;      --color-hard-ink: #c7577a;
+  --color-test: #cfbff5;      --color-test-ink: #7a62c2;  --color-test-soft: #e8e1fa;
+  --color-strength: #cfd3e2;  --color-strength-ink: #7b819e;
+  --color-race: #ffd9a8;      --color-race-ink: #c9822f;
 
   /* chart roles */
-  --color-series-1: #2f6fed;
-  --color-series-2: #e5386d;
-  --color-series-3: #12a594;
-  --color-grid: #dfe4ee;
-  --color-axis: #7c88a8;
+  --color-series-1: #7fb0ee;
+  --color-series-2: #f19bb4;
+  --color-series-3: #7fcdb6;
+  --color-grid: #e7e4f1;
+  --color-axis: #8a8fae;
 
   /* status (always paired with a word) */
-  --color-good: #0f9d58;
-  --color-good-ink: #0a6b3c;
-  --color-warn: #f0a202;
-  --color-critical: #d92d4b;
+  --color-good: #63c29b;
+  --color-good-ink: #2f8a66;
+  --color-warn: #f2c35b;
+  --color-critical: #e8708a;
 }
 
 :root { color-scheme: light; }
@@ -60,25 +63,26 @@ body { -webkit-tap-highlight-color: transparent; font-size: 16px; line-height: 1
 
 @layer components {
 /* Surfaces: flat, square-shouldered, no drop shadows. Depth comes from the navy blocks, not from blur. */
-.card { background: var(--color-card); border: 1px solid var(--color-line); border-radius: 4px; padding: 1rem; }
+.card { background: var(--color-card); border: 1px solid var(--color-line); border-radius: 10px; padding: 1rem; }
 @media (min-width: 1024px) { .card { padding: 1.25rem; } }
-.card-flush { background: var(--color-card); border: 1px solid var(--color-line); border-radius: 4px; overflow: hidden; }
-.block-ink { background: var(--color-ink); color: #fff; border-radius: 4px; }
-.mark { background: var(--color-hivis); color: var(--color-ink); padding: 0 .3em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.card-flush { background: var(--color-card); border: 1px solid var(--color-line); border-radius: 10px; overflow: hidden; }
+.block-ink { background: var(--color-panel); color: var(--color-ink); border-radius: 10px; }
+.mark { border-radius: 4px; background: var(--color-hivis); color: var(--color-ink); padding: 0 .3em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 
 /* Display type */
 .display { font-family: var(--font-display); font-weight: 800; line-height: .95; letter-spacing: 0; text-transform: uppercase; }
 .numeral { font-family: var(--font-display); font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
 
 /* Controls */
-.btn { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; border-radius: 4px; padding: .5rem 1rem; font-weight: 600; font-size: .9375rem; border: 1.5px solid var(--color-ink); background: transparent; color: var(--color-ink); min-height: 2.75rem; transition: background .12s, color .12s; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; border-radius: 8px; padding: .5rem 1rem; font-weight: 600; font-size: .9375rem; border: 1.5px solid var(--color-ink); background: transparent; color: var(--color-ink); min-height: 2.75rem; transition: background .12s, color .12s; }
 .btn:hover { background: var(--color-ink); color: #fff; }
 .btn-primary { background: var(--color-hivis); border-color: var(--color-ink); color: var(--color-ink); }
 .btn-primary:hover { background: var(--color-ink); color: var(--color-hivis); }
 .btn-danger { background: var(--color-critical); color: #fff; border-color: var(--color-critical); }
-.btn-danger:hover { background: #b01f3b; color: #fff; }
+.btn-danger { color: var(--color-ink); }
+.btn-danger:hover { background: #d9566f; color: #fff; }
 .btn:disabled { opacity: .5; }
-.input { border: 1.5px solid var(--color-line-strong); border-radius: 4px; padding: .5rem .7rem; background: #fff; min-height: 2.75rem; width: 100%; }
+.input { border: 1.5px solid var(--color-line-strong); border-radius: 8px; padding: .5rem .7rem; background: #fff; min-height: 2.75rem; width: 100%; }
 .input:focus { outline: 3px solid var(--color-accent); outline-offset: 0; border-color: var(--color-accent); }
 
 /* Type roles */
@@ -93,7 +97,7 @@ body { -webkit-tap-highlight-color: transparent; font-size: 16px; line-height: 1
 
 /* Tables */
 .tbl { width: 100%; border-collapse: collapse; font-size: .9rem; }
-.tbl th { text-align: left; font-size: .8125rem; color: var(--color-muted); font-weight: 600; padding: .5rem .75rem; border-bottom: 2px solid var(--color-ink); white-space: nowrap; }
+.tbl th { text-align: left; font-size: .8125rem; color: var(--color-muted); font-weight: 600; padding: .5rem .75rem; border-bottom: 2px solid var(--color-line-strong); white-space: nowrap; }
 .tbl td { padding: .55rem .75rem; border-bottom: 1px solid var(--color-line); font-variant-numeric: tabular-nums; }
 .tbl tr:last-child td { border-bottom: 0; }
 .tbl .num { text-align: right; }
@@ -103,6 +107,10 @@ body { -webkit-tap-highlight-color: transparent; font-size: 16px; line-height: 1
 
 /* Effort lane: the coloured bar on the left of every session */
 .lane { border-left: 6px solid var(--lane, var(--color-strength)); }
+
+/* Dense stat tile for the analysis page */
+.stat { background: var(--tint, var(--color-wash)); border-radius: 10px; padding: .7rem .8rem; }
+.stat .numeral { font-size: 2rem; }
 }
 
 /* Recharts */

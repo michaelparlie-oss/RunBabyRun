@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { generatePlan, PlanError } from "@/lib/plan/generate";
 import { profileFromForm, ScreeningError, suggestFromActs } from "@/lib/screening";
+import { analyse, applyEvidence } from "@/lib/analysis";
 import { publishChange } from "@/lib/live";
 import { loadCtx } from "@/lib/server/view";
 import { endSession, requireUser } from "@/lib/session";
@@ -28,8 +29,11 @@ function withHistory(next: Plan, prev: Plan | null, today: string): Plan {
   return { ...next, past };
 }
 
-async function savePlan(uid: number, profile: Profile, prev: Plan | null, today: string) {
-  const plan = withHistory(generatePlan(profile, today), prev, today);
+/** Every plan is held to the runner's recorded history before it is generated: it may start lower than they said, never higher. */
+async function savePlan(uid: number, answers: Profile, prev: Plan | null, today: string, acts: ActSummary[]) {
+  const { profile, notes } = applyEvidence(answers, analyse(acts, today));
+  const made = generatePlan(profile, today);
+  const plan = withHistory({ ...made, notices: [...notes, ...made.notices] }, prev, today);
   const store = await getStore();
   await store.set(String(uid), "profile", profile);
   await store.set(String(uid), "plan", plan);
@@ -42,7 +46,7 @@ export async function createPlan(_: ActionState, f: FormData): Promise<ActionSta
   const today = todayLocal(str(f, "tz") || c.profile?.tz);
   try {
     const profile = profileFromForm(f, suggestFromActs(c.acts, today), today);
-    await savePlan(uid, profile, c.plan, today);
+    await savePlan(uid, profile, c.plan, today, c.acts);
   } catch (e) {
     if (e instanceof ScreeningError || e instanceof PlanError) return { ok: false, message: e.message };
     throw e;
@@ -61,7 +65,7 @@ export async function rebuildPlan(): Promise<void> {
     ? { ...c.profile, fitness: { ...c.profile.fitness, weekly_km: sug.weekly_km, longest_km: sug.longest_km, can_run_30: c.profile.fitness.can_run_30 || sug.longest_km >= 5 } }
     : c.profile;
   let ok = true;
-  try { await savePlan(uid, profile, c.plan, c.today); } catch (e) { if (!(e instanceof PlanError)) throw e; ok = false; }
+  try { await savePlan(uid, profile, c.plan, c.today, c.acts); } catch (e) { if (!(e instanceof PlanError)) throw e; ok = false; }
   await changed(uid);
   redirect(ok ? "/plan?rebuilt=1" : "/settings?error=rebuild");
 }

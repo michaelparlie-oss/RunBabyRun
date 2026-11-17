@@ -106,6 +106,14 @@ s, _, b = a.get("/session/nope"); check("unknown session is 404", s == 404)
 s, _, b = a.get("/api/export"); ex = json.loads(b)
 check("export has the runner's data and no secrets", s == 200 and ex["account"]["email"] == "ana@example.com" and ex["strava"]["athlete_id"] == 1 and len(ex["activities"]) == 11 and "token" not in b and "password" not in b and ex["profile"]["health"]["niggles"] == ["knee"])
 
+s, _, b = a.get("/progress"); check("analysis dashboard", "Pace trend" in b and "Load ratio" in b and "Pace against heart rate" in b and "Recent runs" in b and "Export runs (CSV)" in b)
+s, _, b = a.get("/plan"); check("plan says it was built from running history", "Built from your running history" in b and "runs in the last 8 weeks" in b, b[:100])
+s, h, b = a.req("/api/export?format=csv"); rows = b.strip().splitlines()
+check("runs export as CSV", s == 200 and "text/csv" in h["Content-Type"] and rows[0].lstrip("\ufeff").startswith("date,start_time_local,name,source,distance_km") and len(rows) == 12 and ",strava," in rows[1], rows[:2].__str__())
+s, h, b = a.req("/api/export?format=plan"); rows = b.strip().splitlines()
+check("plan exports as CSV", s == 200 and rows[0].lstrip("\ufeff").startswith("date,week,phase,category,type,title") and len(rows) > 60, str(len(rows)))
+s, h, _ = Browser().req("/api/export?format=csv"); check("CSV export needs sign-in", s == 401)
+
 # A second runner, connecting with their own API keys, sees nothing of the first.
 c = Browser(); c.signup("Budi", "budi@example.com")
 s, loc, q = c.login(2, own={"client_id": "98765", "client_secret": "abcdefabcdefabcdefabcdefabcdef12"})

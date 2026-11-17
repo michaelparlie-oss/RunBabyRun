@@ -182,7 +182,7 @@ export function generatePlan(p: Profile, today: string): Plan {
   const taper = spec.taper.slice(Math.max(0, spec.taper.length - Math.max(0, W - 2)));
   const taperLong = spec.taperLong.slice(spec.taperLong.length - taper.length);
   const T = W - 1 - taper.length; // training weeks before the taper
-  const conservative = isConservative(p);
+  const conservative = isConservative(p) || !!p.fitness.cautious;
   const growth = conservative ? 1.06 : 1.08;
   const cycle = conservative ? 3 : 4;
   const isDeload = (i: number) => i > 0 && i < T - 1 && (T - 1 - i) % cycle === cycle - 1;
@@ -192,6 +192,10 @@ export function generatePlan(p: Profile, today: string): Plan {
   if (v0 > peakTarget) peakTarget = Math.min(v0, spec.peak.experienced * 1.2);
   const vStart = clamp(v0, 3 * R, Math.max(peakTarget, 3 * R));
   peakTarget = Math.max(peakTarget, vStart);
+  // However far the race, the biggest week stays within reach of today's volume (coaching judgement, not a research finding).
+  const reach = Math.max(Math.round(vStart * 1.8), vStart + 12);
+  const reachCapped = peakTarget > reach;
+  if (reachCapped) peakTarget = reach;
   const longPeak = r05(Math.min(spec.longPeak[exp], (spec.longMaxMin * 60) / midPace(zones.L)));
   const foundationWeeks = !p.fitness.can_run_30 || (exp === "new" && v0 < 12) ? Math.min(4, Math.max(1, Math.floor(T / 3))) : 0;
   const walkNote = !p.fitness.can_run_30 ? "Run-walk is fine: for example 4 min running, 1 min walking." : "";
@@ -361,6 +365,7 @@ export function generatePlan(p: Profile, today: string): Plan {
   const pred = predictedRaceS(p);
   const label = RACES[key].label;
   if (p.health.flags.length) notices.push({ level: "stop", title: "Check with a doctor first", text: "You answered yes to at least one health question. Please talk to a doctor before starting or progressing this plan, and stop any session if you get chest pain, unusual breathlessness, dizziness or fainting." });
+  if (reachCapped) notices.push({ level: "info", title: "Peak kept within reach", text: `The biggest week is held to about ${peakKm} km so it stays close to what you run now (${Math.round(vStart)} km a week). Rebuild the plan after a few steady weeks and it will reach further.` });
   if (W < spec.minWeeks) notices.push({ level: "warn", title: "Short build-up", text: `You have ${W} weeks; this plan is designed around at least ${spec.minWeeks} for a ${label.toLowerCase()}. It will get you to the start line, not to your best fitness. Consider a later race or a gentler goal.` });
   if (peakLong < spec.longUsual - 0.5) notices.push({ level: "warn", title: "Long run stays short", text: `Your longest run reaches ${peakLong} km. Preparation for a ${label.toLowerCase()} commonly reaches about ${spec.longUsual} km or more. The plan will not raise a long run by more than 10% over your longest run of the previous 30 days, so there are not enough weeks to go further safely.` });
   if (key === "fm" && exp === "new" && (v0 < 20 || W < 20)) notices.push({ level: "warn", title: "A marathon is a big first step", text: "With your current weekly distance and time available, a half marathon first would carry less injury risk. If you keep the marathon, treat finishing as the goal." });

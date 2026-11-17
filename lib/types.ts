@@ -67,6 +67,10 @@ export interface Profile {
     longest_km: number;
     experience: Experience;
     can_run_30: boolean;
+    /** Set from the runner's recorded history when it shows warning signs: use the gentler build-up. */
+    cautious?: boolean;
+    /** What the recorded history showed when the plan was built. */
+    evidence?: { weekly_km: number; longest_km: number; runs_per_week: number; runs: number } | null;
   };
   schedule: { run_days: number[]; long_day: number; strength_per_week: 0 | 1 | 2; equipment: Equipment };
   health: {
