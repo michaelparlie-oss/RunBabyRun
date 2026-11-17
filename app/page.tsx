@@ -3,7 +3,8 @@ import { redirect } from "next/navigation";
 import { rebuildPlan } from "./actions";
 import { RunCard, StrengthCard } from "./_c/Cards";
 import { AutoSync, Submit, SyncButton } from "./_c/Forms";
-import { Flash, Kpi, NoticeBox, PageTitle } from "./_c/ui";
+import { ProgressRing } from "./_c/Rings";
+import { Flash, NoticeBox, PageTitle } from "./_c/ui";
 import { alerts, loadCtx } from "@/lib/server/view";
 import { currentUser } from "@/lib/session";
 import { siteCreds } from "@/lib/strava/oauth";
@@ -100,9 +101,17 @@ export default async function Home({ searchParams }: { searchParams: Promise<Rec
     <>
       <PageTitle title={`Hi ${c.account.firstname}`} sub={fmtDate(c.today, { weekday: "long", day: "numeric", month: "long" })} actions={<SyncButton label="Sync" />} />
       <AutoSync enabled={stale} />
-      <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-3">
-        <Kpi label={over ? "Race" : "Race day in"} value={over ? "Done" : days} unit={over ? undefined : days === 1 ? "day" : "days"} sub={c.plan.summary.race_label} />
-        <Kpi label="This week" value={doneKm.toFixed(1)} unit={`/ ${plannedKm.toFixed(1)} km`} sub={`${weekRuns.filter((s) => ["done", "moved", "partial"].includes(c.status.get(s.id) ?? "")).length} of ${weekRuns.length} runs done`} />
+      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <ProgressRing
+          pct={over ? 1 : 1 - days / Math.max(1, diffDays(c.plan.start, c.plan.race_date))}
+          value={over ? "🏁" : days} unit={over ? "Race day's here" : days === 1 ? "day to go" : "days to go"}
+          label={over ? "Race" : "Race day in"} sub={c.plan.summary.race_label} color="var(--color-series-2)"
+        />
+        <ProgressRing
+          pct={plannedKm > 0 ? doneKm / plannedKm : 0}
+          value={doneKm.toFixed(1)} unit={`/ ${plannedKm.toFixed(1)} km this week`}
+          label="This week" sub={`${weekRuns.filter((s) => ["done", "moved", "partial"].includes(c.status.get(s.id) ?? "")).length} of ${weekRuns.length} runs done`}
+        />
       </div>
       {al.length > 0 && (
         <div className="mb-4 space-y-3">

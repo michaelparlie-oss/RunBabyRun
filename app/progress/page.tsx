@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { WeeklyChart } from "@/app/_c/WeeklyChart";
 import { Kpi, PageTitle, Panel } from "@/app/_c/ui";
 import { loadCtx } from "@/lib/server/view";
 import { requireUser } from "@/lib/session";
@@ -20,7 +21,6 @@ export default async function ProgressPage() {
     const runs = c.acts.filter((a) => a.local_date >= m && a.local_date < end);
     rows.push({ start: m, planned, actual: runs.reduce((t, a) => t + a.distance_m / 1000, 0), long: Math.max(0, ...runs.map((a) => a.distance_m / 1000)), future: m > thisMon });
   }
-  const max = Math.max(1, ...rows.map((r) => Math.max(r.planned, r.actual)));
   const due = c.sessions.filter((s) => s.category === "run" && !s.optional && s.date < c.today && !s.skipped);
   const done = due.filter((s) => ["done", "partial"].includes(c.status.get(s.id) ?? "")).length;
   const strengthDue = c.sessions.filter((s) => s.category === "strength" && s.date < c.today && !s.skipped);
@@ -45,25 +45,23 @@ export default async function ProgressPage() {
           <span><i className="mr-1 inline-block h-2.5 w-2.5 rounded-sm align-middle" style={{ background: "var(--color-grid)", outline: "1px solid var(--color-axis)" }} />Planned</span>
           <span><i className="mr-1 inline-block h-2.5 w-2.5 rounded-sm align-middle" style={{ background: "var(--color-series-1)" }} />Run</span>
         </div>
-        <div className="overflow-x-auto">
-          <table className="tbl">
-            <thead><tr><th>Week of</th><th className="w-1/2">Distance</th><th className="num">Planned</th><th className="num">Run</th><th className="num">Longest</th></tr></thead>
-            <tbody>
-              {rows.map((r) => (
-                <tr key={r.start} className={r.start === thisMon ? "bg-accent-soft" : ""}>
-                  <td className="whitespace-nowrap">{fmtDate(r.start)}</td>
-                  <td>
-                    <div className="relative h-4 min-w-32" role="img" aria-label={`Planned ${r.planned.toFixed(1)} km, run ${r.actual.toFixed(1)} km`}>
-                      <div className="absolute inset-y-0 left-0 rounded-sm" style={{ width: `${(r.planned / max) * 100}%`, background: "var(--color-grid)", outline: "1px solid var(--color-axis)" }} />
-                      {!r.future && <div className="absolute inset-y-1 left-0 rounded-sm" style={{ width: `${(r.actual / max) * 100}%`, background: "var(--color-series-1)" }} />}
-                    </div>
-                  </td>
-                  <td className="num">{r.planned.toFixed(1)}</td><td className="num">{r.future ? "" : r.actual.toFixed(1)}</td><td className="num">{r.future || !r.long ? "" : r.long.toFixed(1)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <WeeklyChart rows={rows} thisMon={thisMon} />
+        <details className="mt-3">
+          <summary className="cursor-pointer text-xs font-semibold text-muted">Show as a table</summary>
+          <div className="mt-2 overflow-x-auto">
+            <table className="tbl">
+              <thead><tr><th>Week of</th><th className="num">Planned</th><th className="num">Run</th><th className="num">Longest</th></tr></thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.start} className={r.start === thisMon ? "bg-accent-soft" : ""}>
+                    <td className="whitespace-nowrap">{fmtDate(r.start)}</td>
+                    <td className="num">{r.planned.toFixed(1)}</td><td className="num">{r.future ? "" : r.actual.toFixed(1)}</td><td className="num">{r.future || !r.long ? "" : r.long.toFixed(1)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </details>
       </Panel>
 
       <div className="grid gap-4 lg:grid-cols-2">

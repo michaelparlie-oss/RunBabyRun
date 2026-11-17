@@ -3,6 +3,7 @@ import Link from "next/link";
 import { connection } from "next/server";
 import "./globals.css";
 import { BottomNav, Sidebar } from "./_c/BottomNav";
+import { LiveRefresh } from "./_c/LiveRefresh";
 import { currentUser } from "@/lib/session";
 import { getStore } from "@/lib/storage";
 import type { Account, Profile } from "@/lib/types";
@@ -45,6 +46,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           )}
         </div>
         {nav && <BottomNav />}
+        {nav && <LiveRefresh />}
       </body>
     </html>
   );
