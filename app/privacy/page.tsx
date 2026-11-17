@@ -32,7 +32,7 @@ export default function PrivacyPage() {
           <ul className="list-disc space-y-1 pl-5">
             <li><b>Download:</b> Settings → Download my data.</li>
             <li><b>Delete:</b> Settings → Delete my account. This revokes RunBabyRun&apos;s access at Strava and deletes everything stored about you here.</li>
-            <li><b>Disconnect from Strava&apos;s side:</b> Strava → Settings → My Apps → Revoke access. Syncing stops at once; use Delete my account to remove what is already stored.</li>
+            <li><b>Disconnect from Strava&apos;s side:</b> Strava → Settings → My Apps → Revoke access. Syncing stops, and your Strava tokens and stored activities are removed from this site. Your answers, plan and logs stay until you use Delete my account.</li>
           </ul>
           {contact && <p className="mt-2">Questions: <a className="underline" href={`mailto:${contact}`}>{contact}</a>.</p>}
         </Panel>

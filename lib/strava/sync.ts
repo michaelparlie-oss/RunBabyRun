@@ -105,3 +105,26 @@ export async function ensureDetail(uid: number, actId: number, opts: { fetch?: F
     return null;
   }
 }
+
+/**
+ * The runner revoked access at Strava: remove everything that came from Strava (tokens, activities, laps and
+ * streams). Their own answers, plan and logs stay, so reconnecting picks up where they left off.
+ */
+export async function purgeStravaData(uid: number): Promise<void> {
+  const store = await getStore();
+  const o = String(uid);
+  for (const a of await loadActs(uid)) await store.del(o, `act_${a.id}`);
+  await store.del(o, "acts");
+  await store.del(o, "account");
+}
+
+/** True only when Strava itself confirms the stored token no longer works. */
+export async function accessRevoked(uid: number, f: FetchFn = fetch): Promise<boolean> {
+  if (!(await loadAccount(uid))) return false;
+  try {
+    await new StravaClient({ getAccessToken: () => validAccessToken(uid, f), fetch: f, maxWaitMs: 0 }).get("/athlete");
+    return false;
+  } catch (e) {
+    return (e instanceof StravaError && e.status === 401) || (e instanceof TokenError && (e.status === 400 || e.status === 401));
+  }
+}

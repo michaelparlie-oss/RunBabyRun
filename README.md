@@ -38,8 +38,30 @@ Check Strava's current API terms, rate limits and athlete-capacity process befor
    - `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`: enables the shared app.
    - `SESSION_SECRET`: 32+ random characters. If unset, a secret is generated and kept in the site's storage.
    - `CONTACT_EMAIL`: shown on the privacy page.
+   - `STRAVA_WEBHOOK_VERIFY_TOKEN`: see Webhook below.
 3. In the Strava API application, set **Authorization Callback Domain** to the site's host (e.g. `runbabyrun.netlify.app`).
 4. Open `/api/health`. It reports whether storage works and whether the shared app is configured.
+
+### Webhook (shared app only)
+
+Strava's API terms ask applications to use webhooks to learn when an athlete revokes access. The endpoint is
+`/api/strava/webhook`. When a runner disconnects RunBabyRun from Strava's side, it checks with Strava and then deletes
+that runner's tokens and stored activities (their own answers, plan and logs stay until they delete their account).
+
+One-time setup, after the shared app's env vars are set:
+
+1. Set `STRAVA_WEBHOOK_VERIFY_TOKEN` in Netlify to any random string and redeploy.
+2. Create the subscription (run once, from any computer):
+
+```bash
+curl -X POST https://www.strava.com/api/v3/push_subscriptions \
+  -F client_id=YOUR_CLIENT_ID -F client_secret=YOUR_CLIENT_SECRET \
+  -F callback_url=https://YOUR-SITE.netlify.app/api/strava/webhook \
+  -F verify_token=THE_SAME_RANDOM_STRING
+```
+
+Own-keys mode has no webhook (each runner's own application would need its own subscription); a revoked connection is
+detected at the next sync instead.
 
 ### Storage
 
@@ -83,6 +105,7 @@ python3 scripts/smoke.py http://127.0.0.1:3111 $(date +%F)
 
 - [ ] Read and accept the current Strava API Agreement and Brand Guidelines; replace the text "Connect with Strava" button
       with Strava's official button asset if required.
+- [ ] Create the webhook subscription (see Webhook above).
 - [ ] Request more athlete capacity for the shared Strava application, or keep the site on own-keys mode.
 - [ ] Have the Terms and Privacy pages reviewed for your jurisdiction. They are plain-language drafts, not legal advice.
       The app stores health-related answers, which many privacy laws treat as sensitive data.

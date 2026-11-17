@@ -77,13 +77,12 @@ function Landing({ error, deleted, host }: { error?: string; deleted?: boolean; 
 export default async function Home({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const q = await searchParams;
   const uid = await currentUser();
-  if (!uid) {
-    const { headers } = await import("next/headers");
-    const h = await headers();
-    return <Landing error={q.error} deleted={q.deleted === "1"} host={(h.get("x-forwarded-host") ?? h.get("host") ?? "this site").split(":")[0]} />;
-  }
+  const { headers } = await import("next/headers");
+  const h = await headers();
+  const host = (h.get("x-forwarded-host") ?? h.get("host") ?? "this site").split(":")[0];
+  if (!uid) return <Landing error={q.error} deleted={q.deleted === "1"} host={host} />;
   const c = await loadCtx(uid);
-  if (!c.account) return <Landing error={q.error} host="this site" />;
+  if (!c.account) return <Landing error={q.error} host={host} />; // access revoked at Strava: connect again to pick up the plan
   if (!c.profile || !c.plan) redirect("/start");
 
   const todays = c.sessions.filter((s) => s.date === c.today);

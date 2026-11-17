@@ -1,0 +1,36 @@
+import { NextResponse, type NextRequest } from "next/server";
+import { safeEqual } from "@/lib/crypto";
+import { loadAccount } from "@/lib/strava/oauth";
+import { accessRevoked, purgeStravaData } from "@/lib/strava/sync";
+
+/**
+ * Strava webhook for the shared Strava application. Its one job is to act when a runner revokes access
+ * from Strava's side, as Strava's API terms ask. See README ("Webhook") for the one-time subscription.
+ */
+
+/** Subscription handshake: Strava calls this once and expects the challenge echoed back. */
+export async function GET(req: NextRequest) {
+  const q = req.nextUrl.searchParams;
+  const want = process.env.STRAVA_WEBHOOK_VERIFY_TOKEN;
+  const got = q.get("hub.verify_token") ?? "";
+  const challenge = q.get("hub.challenge");
+  if (!want || q.get("hub.mode") !== "subscribe" || !challenge || !safeEqual(got, want)) return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  return NextResponse.json({ "hub.challenge": challenge });
+}
+
+/**
+ * Events are not signed by Strava, so nothing is deleted on the event's word alone: a deauthorization
+ * event only prompts a check with Strava, and data is removed when Strava confirms the token is dead.
+ */
+export async function POST(req: NextRequest) {
+  let ev: { object_type?: string; aspect_type?: string; owner_id?: number; updates?: Record<string, unknown> } = {};
+  try { ev = await req.json(); } catch { /* ignore malformed bodies */ }
+  const uid = Number(ev.owner_id);
+  if (ev.object_type === "athlete" && String(ev.updates?.authorized) === "false" && Number.isSafeInteger(uid) && uid > 0) {
+    try {
+      const acc = await loadAccount(uid);
+      if (acc?.mode === "shared" && (await accessRevoked(uid))) await purgeStravaData(uid);
+    } catch { /* Strava expects a fast 200 regardless; the next sync reports a revoked connection */ }
+  }
+  return NextResponse.json({ ok: true });
+}

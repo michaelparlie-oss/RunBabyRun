@@ -4,7 +4,8 @@ import { makeSessionToken, readSessionToken, SESSION_MAX_AGE_S } from "@/lib/ses
 import { memoryStore, setStoreForTests } from "@/lib/storage";
 import { profileFromForm, ScreeningError, suggestFromActs } from "@/lib/screening";
 import { completeLogin, loadAccount, validAccessToken } from "@/lib/strava/oauth";
-import { ensureDetail, loadActs, syncUser } from "@/lib/strava/sync";
+import { accessRevoked, ensureDetail, loadActs, purgeStravaData, syncUser } from "@/lib/strava/sync";
+import { getStore } from "@/lib/storage";
 import { generatePlan } from "@/lib/plan/generate";
 import { alerts, loadCtx } from "@/lib/server/view";
 import type { ActSummary } from "@/lib/types";
@@ -168,6 +169,23 @@ describe("Strava connection", () => {
     expect(n).toBe(2);
     expect(await ensureDetail(7, 999, { fetch: f })).toBeNull();
     expect(n).toBe(2);
+  });
+
+  it("removes Strava data only when Strava confirms access was revoked, and keeps the runner's own plan", async () => {
+    await login(7);
+    const store = await getStore();
+    await store.set("7", "profile", { mine: true });
+    await syncUser(7, { fetch: async () => json([{ id: 1, name: "Run", sport_type: "Run", start_date_local: "2026-11-15T06:00:00Z", distance: 8000, moving_time: 3000, elapsed_time: 3100 }]) });
+    await store.set("7", "act_1", { id: 1 });
+    expect(await accessRevoked(7, async () => json({ id: 7 }))).toBe(false);
+    expect(await accessRevoked(7, async () => { throw new Error("network down"); })).toBe(false);
+    expect(await accessRevoked(99, async () => json({}, 401))).toBe(false);
+    expect(await accessRevoked(7, async () => json({ message: "Authorization Error" }, 401))).toBe(true);
+    await purgeStravaData(7);
+    expect(await loadAccount(7)).toBeNull();
+    expect(await loadActs(7)).toEqual([]);
+    expect(await store.get("7", "act_1")).toBeNull();
+    expect(await store.get("7", "profile")).toEqual({ mine: true });
   });
 });
 

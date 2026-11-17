@@ -50,6 +50,10 @@ to recreational runners; a reference run taken from Strava training data underst
 - **Strava calls are minimal.** Opening the app lists new activities (1–2 calls, at most every 30 minutes). Laps and
   streams are fetched only when a matched run is opened, once, then stored. Rate-limit responses pause syncing instead of
   retrying inside a serverless request.
-- **No webhooks.** Webhooks need a subscription per Strava application, which does not fit own-keys mode.
+- **Webhook for deauthorization only.** Strava's getting-started guide says its API terms require webhooks to learn when
+  an athlete deauthorizes an application. `/api/strava/webhook` handles that for the shared app. Strava does not sign
+  webhook events, so an event never deletes data by itself: it triggers a check with Strava, and Strava-derived data is
+  removed only when Strava confirms the token is dead. Activity events are ignored; syncing stays pull-based. Own-keys
+  mode has no webhook because each runner's application would need its own subscription.
 - **Secrets.** `SESSION_SECRET` from the environment when set; otherwise generated once and stored in site storage so the
   site works with zero configuration. Setting the env var is safer because the key is then held apart from the data.
