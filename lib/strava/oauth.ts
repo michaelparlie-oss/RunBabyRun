@@ -38,7 +38,7 @@ export async function loadAccount(uid: number): Promise<Account | null> {
   return (await getStore()).get<Account>(String(uid), "account");
 }
 export async function saveAccount(a: Account): Promise<void> {
-  await (await getStore()).set(String(a.athlete_id), "account", a);
+  await (await getStore()).set(String(a.uid), "account", a);
 }
 
 export async function credsFor(a: Account): Promise<Creds> {
@@ -48,13 +48,13 @@ export async function credsFor(a: Account): Promise<Creds> {
   return s;
 }
 
-/** Create or update the runner's account after a successful authorization. */
-export async function completeLogin(t: TokenResponse, scope: string, mode: "shared" | "own", own: Creds | null): Promise<Account> {
+/** Store the runner's Strava connection after a successful authorization. */
+export async function completeLogin(uid: number, t: TokenResponse, scope: string, mode: "shared" | "own", own: Creds | null): Promise<Account> {
   if (!t.athlete?.id) throw new Error("Strava did not return an athlete.");
   const secret = await getSecret();
-  const prev = await loadAccount(t.athlete.id);
+  const prev = await loadAccount(uid);
   const acc: Account = {
-    athlete_id: t.athlete.id, firstname: t.athlete.firstname ?? prev?.firstname ?? "Runner", lastname: t.athlete.lastname ?? prev?.lastname ?? "",
+    uid, athlete_id: t.athlete.id, firstname: t.athlete.firstname ?? prev?.firstname ?? "Runner", lastname: t.athlete.lastname ?? prev?.lastname ?? "",
     created_at: prev?.created_at ?? new Date().toISOString(), mode,
     client_id: mode === "own" ? own!.clientId : null, client_secret_enc: mode === "own" ? encrypt(own!.clientSecret, secret) : null,
     access_token_enc: encrypt(t.access_token, secret), refresh_token_enc: encrypt(t.refresh_token, secret), expires_at: t.expires_at, scope,

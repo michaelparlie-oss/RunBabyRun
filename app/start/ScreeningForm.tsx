@@ -33,8 +33,8 @@ function Choice({ name, value, state, set, children }: { name: string; value: st
   );
 }
 
-export function ScreeningForm({ sug, questions, niggles, prev, minDate, maxDate }: {
-  sug: Sug; questions: { id: string; text: string }[]; niggles: { id: string; label: string }[]; prev: Profile | null; minDate: string; maxDate: string;
+export function ScreeningForm({ sug, questions, niggles, prev, minDate, maxDate, manual = false }: {
+  manual?: boolean; sug: Sug; questions: { id: string; text: string }[]; niggles: { id: string; label: string }[]; prev: Profile | null; minDate: string; maxDate: string;
 }) {
   const [state, action] = useActionState(createPlan, null);
   const [tz, setTz] = useState(prev?.tz ?? "");
@@ -70,7 +70,7 @@ export function ScreeningForm({ sug, questions, niggles, prev, minDate, maxDate 
         {goal === "time" && <Field label="Goal time" hint="h:mm:ss or mm:ss, for example 2:05:00 or 55:00"><input name="goal_time" required inputMode="numeric" pattern="[0-9:]{4,8}" className="input mt-1" placeholder="2:05:00" /></Field>}
       </Step>
 
-      <Step n={2} title="Where you are now" sub={sug.run_count ? `Pre-filled from your last four weeks on Strava (${sug.run_count} runs found). Correct anything that looks off.` : "No recent runs found on Strava, so please fill these in."}>
+      <Step n={2} title="Where you are now" sub={sug.run_count ? `Pre-filled from your last four weeks${manual ? "" : " on Strava"} (${sug.run_count} runs found). Correct anything that looks off.` : manual ? "Your best estimate is fine. You can rebuild the plan later once you have logged a few weeks." : "No recent runs found on Strava, so please fill these in."}>
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Typical distance per week (km)"><input type="number" name="weekly_km" min={0} max={250} step={1} defaultValue={sug.weekly_km} required className="input mt-1" /></Field>
           <Field label="Longest run in the last month (km)"><input type="number" name="longest_km" min={0} max={80} step={0.5} defaultValue={sug.longest_km} required className="input mt-1" /></Field>
@@ -86,7 +86,7 @@ export function ScreeningForm({ sug, questions, niggles, prev, minDate, maxDate 
         <div>
           <div className="text-sm font-medium">A recent result, to set your paces</div>
           <div className="mt-2 grid gap-2" role="radiogroup" aria-label="Recent result">
-            {sug.ref && <Choice name="ref_kind" value="strava" state={refKind} set={setRefKind}><b>Use my fastest recent Strava run:</b> {sug.ref.label}. Training runs understate race fitness, so paces start on the safe side.</Choice>}
+            {sug.ref && <Choice name="ref_kind" value="strava" state={refKind} set={setRefKind}><b>{`Use my fastest recent ${manual ? "" : "Strava "}run:`}</b> {sug.ref.label}. Training runs understate race fitness, so paces start on the safe side.</Choice>}
             <Choice name="ref_kind" value="race" state={refKind} set={setRefKind}><b>Enter a race or all-out effort</b> from the last three months.</Choice>
             <Choice name="ref_kind" value="none" state={refKind} set={setRefKind}><b>I don&apos;t have one.</b> Start from an estimate; the plan adds a 5K time trial to correct it.</Choice>
           </div>
@@ -147,7 +147,7 @@ export function ScreeningForm({ sug, questions, niggles, prev, minDate, maxDate 
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Age (optional)" hint="Used only to estimate your maximum heart rate."><input type="number" name="age" min={18} max={99} defaultValue={prev?.health.age ?? ""} className="input mt-1" /></Field>
-          <Field label="Maximum heart rate, if you know it" hint={sug.max_hr ? `Highest in your recent Strava runs: ${sug.max_hr} bpm (used if you leave this empty).` : "Leave empty to estimate it."}><input type="number" name="max_hr" min={120} max={230} defaultValue={prev?.health.max_hr_source === "entered" ? prev.health.max_hr ?? "" : ""} className="input mt-1" /></Field>
+          <Field label="Maximum heart rate, if you know it" hint={sug.max_hr ? `Highest in your recent runs: ${sug.max_hr} bpm (used if you leave this empty).` : "Leave empty to estimate it."}><input type="number" name="max_hr" min={120} max={230} defaultValue={prev?.health.max_hr_source === "entered" ? prev.health.max_hr ?? "" : ""} className="input mt-1" /></Field>
         </div>
         <label className="flex items-start gap-3 text-sm"><input type="checkbox" name="adult" value="yes" required className="mt-0.5 h-4 w-4" /><span>I am 18 or older.</span></label>
         <label className="flex items-start gap-3 text-sm"><input type="checkbox" name="ack" value="yes" required className="mt-0.5 h-4 w-4" /><span>I understand this plan is general training guidance, not medical advice, and that I should stop and seek help if I feel chest pain, faint, or unusually breathless.</span></label>

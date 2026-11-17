@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
-import { toggleSkip } from "@/app/actions";
-import { PainForm, Submit } from "@/app/_c/Forms";
+import { removeRun, tickRun, toggleSkip } from "@/app/actions";
+import { LogRunForm, PainForm, Submit } from "@/app/_c/Forms";
 import { PageTitle, Panel, ScoreRing, SegmentList, StatusPill, TargetBadge } from "@/app/_c/ui";
 import { scoreRun } from "@/lib/match/score";
 import { NIGGLES } from "@/lib/screening";
@@ -21,7 +21,9 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
   const st = c.status.get(s.id) ?? "pending";
   const a = c.actFor.get(s.id);
   const detail = a ? await ensureDetail(uid, a.id) : null;
-  const score = a ? scoreRun(s, { ...toAct(a), laps: detail?.laps ?? null, streams: detail?.streams ?? null }, c.zones) : null;
+  const ticked = a?.manual === "ticked";
+  const byHand = !c.account;
+  const score = a && !ticked ? scoreRun(s, { ...toAct(a), laps: detail?.laps ?? null, streams: detail?.streams ?? null }, c.zones) : null;
   const reps = score?.details.reps.reps ?? [];
   const canSkip = !a && s.date >= c.today && s.kind !== "race";
   return (
@@ -38,7 +40,9 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
 
       {a && score && (
         <Panel title="How it went" sub={<>{a.name}, {fmtKm(a.distance_m / 1000)} in {fmtDuration(a.moving_time_s)}, {fmtPace(a.moving_time_s / (a.distance_m / 1000))} /km{a.avg_hr ? `, average HR ${Math.round(a.avg_hr)}` : ""}</>} className="mb-4"
-          right={<a href={`https://www.strava.com/activities/${a.id}`} target="_blank" rel="noreferrer" className="text-sm font-semibold underline" style={{ color: "#fc4c02" }}>View on Strava</a>}>
+          right={a.manual
+            ? <form action={removeRun}><input type="hidden" name="id" value={a.id} /><Submit className="text-sm font-semibold underline underline-offset-4" pendingText="Removing…">Remove this entry</Submit></form>
+            : <a href={`https://www.strava.com/activities/${a.id}`} target="_blank" rel="noreferrer" className="text-sm font-semibold underline" style={{ color: "#fc4c02" }}>View on Strava</a>}>
           <div className="flex justify-around rounded-[4px] bg-wash py-4">
             <ScoreRing score={score.overall_score} label="overall" />
             <ScoreRing score={score.distance_score} label="distance" />
@@ -64,7 +68,20 @@ export default async function SessionPage({ params }: { params: Promise<{ id: st
               <p className="mt-1 text-xs text-muted">Reps found from {score.details.reps.method === "laps" ? "your watch laps" : "the GPS data"}.</p>
             </div>
           )}
-          {!detail && <p className="mt-2 text-xs text-muted">Detailed data from Strava isn&apos;t available right now, so this uses the summary only. Reload later for the full check.</p>}
+          {!detail && !a.manual && <p className="mt-2 text-xs text-muted">Detailed data from Strava isn&apos;t available right now, so this uses the summary only. Reload later for the full check.</p>}
+        </Panel>
+      )}
+
+      {ticked && a && (
+        <Panel title="Marked as done" sub="Counted at the planned distance. Add what you actually ran for a pace and heart-rate check." className="mb-4"
+          right={<form action={removeRun}><input type="hidden" name="id" value={a.id} /><Submit className="text-sm font-semibold underline underline-offset-4" pendingText="Removing…">Undo</Submit></form>}>
+          <LogRunForm date={s.date} km={s.distance_km} />
+        </Panel>
+      )}
+      {!a && byHand && s.date <= c.today && !s.skipped && (
+        <Panel title="Did you do this run?" sub="One tap counts it at the planned distance. Adding distance and time gives you the full check." className="mb-4">
+          <form action={tickRun}><input type="hidden" name="id" value={s.id} /><Submit className="btn" pendingText="Saving…">Mark as done</Submit></form>
+          <div className="mt-4 border-t border-line pt-4"><LogRunForm date={s.date} km={s.distance_km} /></div>
         </Panel>
       )}
 

@@ -101,7 +101,7 @@ describe("screening", () => {
 });
 
 describe("Strava connection", () => {
-  const login = (id = 7, expires = nowEpoch() + 3600) => completeLogin({ access_token: "acc-1", refresh_token: "ref-1", expires_at: expires, athlete: { id, firstname: "Ana", lastname: "R" } }, "read,activity:read_all", "shared", null);
+  const login = (id = 7, expires = nowEpoch() + 3600) => completeLogin(id, { access_token: "acc-1", refresh_token: "ref-1", expires_at: expires, athlete: { id, firstname: "Ana", lastname: "R" } }, "read,activity:read_all", "shared", null);
 
   it("stores tokens encrypted and refreshes them when they expire", async () => {
     const acc = await login(7, nowEpoch() - 10);
@@ -117,7 +117,7 @@ describe("Strava connection", () => {
   });
 
   it("uses the runner's own API keys when they connected with them", async () => {
-    await completeLogin({ access_token: "a", refresh_token: "r", expires_at: nowEpoch() - 10, athlete: { id: 8 } }, "read,activity:read_all", "own", { clientId: "999", clientSecret: "ownsecretownsecretownsecret" });
+    await completeLogin(8, { access_token: "a", refresh_token: "r", expires_at: nowEpoch() - 10, athlete: { id: 8 } }, "read,activity:read_all", "own", { clientId: "999", clientSecret: "ownsecretownsecretownsecret" });
     const acc = (await loadAccount(8))!;
     expect(acc.mode).toBe("own");
     expect(JSON.stringify(acc)).not.toContain("ownsecret");

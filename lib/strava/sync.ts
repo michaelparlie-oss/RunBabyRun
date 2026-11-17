@@ -3,6 +3,7 @@ import type { ActSummary } from "@/lib/types";
 import type { Lap, Streams } from "@/lib/match/types";
 import { localDateOf, nowEpoch } from "@/lib/util/dates";
 import { RateLimitPause, StravaClient, StravaError, type FetchFn } from "./client";
+import { unlinkStrava } from "@/lib/users";
 import { loadAccount, saveAccount, TokenError, validAccessToken } from "./oauth";
 
 export const FIRST_SYNC_DAYS = 120;
@@ -85,6 +86,7 @@ export function downsample<T extends Record<string, unknown[]>>(st: T, max = MAX
 /** Laps and streams for one activity, fetched once (2 API calls) and kept. Returns null if Strava can't be reached. */
 export async function ensureDetail(uid: number, actId: number, opts: { fetch?: FetchFn } = {}): Promise<ActDetail | null> {
   const store = await getStore();
+  if (actId < 0) return null; // entered by hand: there is nothing more to fetch
   const key = `act_${actId}`;
   const have = await store.get<ActDetail>(String(uid), key);
   if (have) return have;
@@ -113,12 +115,14 @@ export async function ensureDetail(uid: number, actId: number, opts: { fetch?: F
 export async function purgeStravaData(uid: number): Promise<void> {
   const store = await getStore();
   const o = String(uid);
-  for (const a of await loadActs(uid)) await store.del(o, `act_${a.id}`);
-  await store.del(o, "acts");
+  const acc = await loadAccount(uid);
+  const acts = await loadActs(uid);
+  for (const a of acts) if (!a.manual) await store.del(o, `act_${a.id}`);
+  await store.set(o, "acts", acts.filter((a) => a.manual)); // runs entered by hand are the runner's own and stay
   await store.del(o, "account");
+  if (acc) await unlinkStrava(acc.athlete_id, uid);
 }
 
-/** True only when Strava itself confirms the stored token no longer works. */
 export async function accessRevoked(uid: number, f: FetchFn = fetch): Promise<boolean> {
   if (!(await loadAccount(uid))) return false;
   try {

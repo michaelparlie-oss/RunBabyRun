@@ -1,4 +1,4 @@
-"""Stand-in for Strava's API, for local end-to-end tests only. Usage: python3 scripts/fake-strava.py [port]"""
+"""Stand-in for Strava's API and for Supabase Auth, for local end-to-end tests only. Usage: python3 scripts/fake-strava.py [port]"""
 import json, sys, datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
@@ -14,6 +14,9 @@ def runs(athlete):
     out.append({"id": athlete * 1000 + 99, "name": "Ride", "sport_type": "Ride", "start_date_local": f"{TODAY}T06:00:00Z", "distance": 30000, "moving_time": 4000, "elapsed_time": 4000})
     return out
 
+USERS = {}   # email -> {id, password, name}
+def user_json(email): u = USERS[email]; return {"id": u["id"], "email": email, "user_metadata": {"name": u["name"]}}
+
 class H(BaseHTTPRequestHandler):
     def log_message(self, *a): pass
     def send(self, body, status=200):
@@ -22,9 +25,36 @@ class H(BaseHTTPRequestHandler):
         self.send_header("X-RateLimit-Limit", "200,2000"); self.send_header("X-RateLimit-Usage", "3,10"); self.end_headers(); self.wfile.write(b)
     def athlete(self):
         return int(self.headers.get("Authorization", "Bearer acc-0").split("-")[-1])
+    def auth_user(self):
+        tok = self.headers.get("Authorization", "").replace("Bearer ", "")
+        return next((e for e, u in USERS.items() if f"jwt-{u['id']}" == tok), None)
+    def do_PUT(self):
+        raw = self.rfile.read(int(self.headers.get("Content-Length", 0))).decode()
+        e = self.auth_user()
+        if urlparse(self.path).path == "/auth/v1/user" and e:
+            USERS[e]["password"] = json.loads(raw)["password"]; return self.send(user_json(e))
+        self.send({"message": "unauthorized"}, 401)
     def do_POST(self):
-        body = parse_qs(self.rfile.read(int(self.headers.get("Content-Length", 0))).decode())
+        raw = self.rfile.read(int(self.headers.get("Content-Length", 0))).decode()
         u = urlparse(self.path)
+        if u.path.startswith("/auth/v1/") or u.path.startswith("/rest/v1/") or u.path.startswith("/realtime/"):
+            j = json.loads(raw or "{}")
+            if u.path == "/auth/v1/signup":
+                if j["email"] in USERS: return self.send({"error_code": "user_already_exists", "msg": "User already registered"}, 422)
+                USERS[j["email"]] = {"id": f"00000000-0000-4000-8000-{len(USERS):012d}", "password": j["password"], "name": j.get("data", {}).get("name", "")}
+                return self.send({"access_token": f"jwt-{USERS[j['email']]['id']}", "user": user_json(j["email"])})
+            if u.path == "/auth/v1/token":
+                x = USERS.get(j.get("email"))
+                if not x or x["password"] != j.get("password"): return self.send({"error_code": "invalid_credentials", "msg": "Invalid login credentials"}, 400)
+                return self.send({"access_token": f"jwt-{x['id']}", "user": user_json(j["email"])})
+            if u.path == "/auth/v1/recover": return self.send({})
+            if u.path == "/rest/v1/rpc/delete_own_account":
+                e = self.auth_user()
+                if not e: return self.send({"message": "unauthorized"}, 401)
+                del USERS[e]; return self.send({})
+            if u.path == "/realtime/v1/api/broadcast": return self.send({}, 202)
+            return self.send({"message": "not found"}, 404)
+        body = parse_qs(raw)
         if u.path == "/oauth/token":
             if body.get("client_secret", [""])[0].startswith("wrong"): return self.send({"message": "Bad Request"}, 400)
             aid = int((body.get("code") or body.get("refresh_token") or ["x-1"])[0].split("-")[-1])
@@ -33,6 +63,9 @@ class H(BaseHTTPRequestHandler):
         self.send({"message": "not found"}, 404)
     def do_GET(self):
         u = urlparse(self.path)
+        if u.path == "/auth/v1/user":
+            e = self.auth_user()
+            return self.send(user_json(e)) if e else self.send({"message": "unauthorized"}, 401)
         if u.path == "/api/v3/athlete/activities":
             after = int(parse_qs(u.query).get("after", ["0"])[0])
             return self.send([r for r in runs(self.athlete()) if datetime.datetime.fromisoformat(r["start_date_local"].replace("Z", "+00:00")).timestamp() > after])

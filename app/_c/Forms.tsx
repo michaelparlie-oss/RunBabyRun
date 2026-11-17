@@ -1,7 +1,7 @@
 "use client";
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
-import { logPain, syncNow, updateFitness, updateMaxHr, type ActionState } from "@/app/actions";
+import { logPain, logRun, syncNow, updateFitness, updateMaxHr, type ActionState } from "@/app/actions";
 import { Flash } from "./ui";
 
 export function Submit({ children, className = "btn btn-primary", pendingText = "Working…" }: { children: React.ReactNode; className?: string; pendingText?: string }) {
@@ -86,6 +86,23 @@ export function MaxHrForm({ current }: { current: number }) {
       </label>
       <Submit className="btn">Save</Submit>
       <div className="w-full"><Result state={state} /></div>
+    </form>
+  );
+}
+
+/** Distance, time and (optionally) heart rate for a run that did not come from Strava. */
+export function LogRunForm({ date, maxDate, km }: { date?: string; maxDate?: string; km?: number | null }) {
+  const [state, action] = useActionState(logRun, null);
+  return (
+    <form action={action} className="space-y-3">
+      {date ? <input type="hidden" name="date" value={date} /> : <label className="block text-sm font-semibold">Date<input name="date" type="date" required max={maxDate} defaultValue={maxDate} className="input mt-1" /></label>}
+      <div className="grid grid-cols-3 gap-3">
+        <label className="block text-sm font-semibold">Distance (km)<input name="km" required inputMode="decimal" pattern="[0-9.,]{1,6}" defaultValue={km ?? undefined} placeholder="6.5" className="input mt-1" /></label>
+        <label className="block text-sm font-semibold">Time<input name="time" required inputMode="numeric" pattern="[0-9:]{4,8}" placeholder="42:30" className="input mt-1" /></label>
+        <label className="block text-sm font-semibold">Avg heart rate<input name="hr" inputMode="numeric" pattern="[0-9]{2,3}" placeholder="optional" className="input mt-1" /></label>
+      </div>
+      <Submit className="btn btn-primary" pendingText="Saving…">Log this run</Submit>
+      <Result state={state} />
     </form>
   );
 }

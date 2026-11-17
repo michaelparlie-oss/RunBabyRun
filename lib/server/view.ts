@@ -2,12 +2,13 @@ import { matchRuns } from "@/lib/match/match";
 import type { Act, MatchStatus } from "@/lib/match/types";
 import { spikeCap } from "@/lib/plan/generate";
 import { getStore } from "@/lib/storage";
-import { emptyLogs, type Account, type ActSummary, type Logs, type Notice, type Plan, type Profile, type Session, type Zones } from "@/lib/types";
+import { emptyLogs, type Account, type ActSummary, type User, type Logs, type Notice, type Plan, type Profile, type Session, type Zones } from "@/lib/types";
 import { addDays, diffDays, fmtDate, mondayOf, todayLocal } from "@/lib/util/dates";
 import { computeZones } from "@/lib/zones";
 
 export interface Ctx {
   uid: number;
+  user: User | null;
   account: Account | null;
   profile: Profile | null;
   plan: Plan | null;
@@ -26,8 +27,8 @@ export const toAct = (a: ActSummary): Act => ({ ...a, laps: null, streams: null 
 export async function loadCtx(uid: number): Promise<Ctx> {
   const store = await getStore();
   const o = String(uid);
-  const [account, profile, plan, acts, logs] = await Promise.all([
-    store.get<Account>(o, "account"), store.get<Profile>(o, "profile"), store.get<Plan>(o, "plan"), store.get<ActSummary[]>(o, "acts"), store.get<Logs>(o, "logs"),
+  const [user, account, profile, plan, acts, logs] = await Promise.all([
+    store.get<User>(o, "user"), store.get<Account>(o, "account"), store.get<Profile>(o, "profile"), store.get<Plan>(o, "plan"), store.get<ActSummary[]>(o, "acts"), store.get<Logs>(o, "logs"),
   ]);
   const lg = { ...emptyLogs(), ...(logs ?? {}) };
   const today = todayLocal(profile?.tz);
@@ -49,7 +50,7 @@ export async function loadCtx(uid: number): Promise<Ctx> {
     for (const s of all.filter((x) => x.category === "strength"))
       status.set(s.id, lg.strength_done[s.id] ? "done" : s.skipped ? "skipped" : diffDays(s.date, today) >= 2 ? "missed" : "pending");
   }
-  return { uid, account, profile, plan, acts: list, logs: lg, today, zones: profile ? computeZones(profile) : null, sessions: all, status, actFor, extras };
+  return { uid, user, account, profile, plan, acts: list, logs: lg, today, zones: profile ? computeZones(profile) : null, sessions: all, status, actFor, extras };
 }
 
 export interface Alert extends Notice { action?: "rebuild" | "log" }

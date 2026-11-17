@@ -9,9 +9,12 @@ export default function PrivacyPage() {
     <>
       <PageTitle title="Privacy" sub="What is stored, why, and how to remove it." />
       <div className="space-y-4 text-sm">
-        <Panel title="What RunBabyRun reads from Strava">
+        <Panel title="Your account">
+          <p>You sign in with an email address and a password. Sign-in is handled by Supabase Auth: your email and a scrambled (hashed) form of your password are stored there, and RunBabyRun never sees or stores the password itself. Your first name and email are also kept with your training data so the app can greet you.</p>
+        </Panel>
+        <Panel title="What RunBabyRun reads from Strava, if you connect it">
           <ul className="list-disc space-y-1 pl-5">
-            <li>Your first and last name and Strava athlete number, to identify your account.</li>
+            <li>Your first and last name and Strava athlete number, to link the connection to your account.</li>
             <li>Your running activities (runs, trail runs, treadmill runs): name, date, distance, time, average and maximum heart rate. On first connection it looks back 120 days.</li>
             <li>Laps and second-by-second pace and heart-rate data, only for a run you open that has been matched to a planned session.</li>
           </ul>
@@ -19,20 +22,21 @@ export default function PrivacyPage() {
         </Panel>
         <Panel title="What is stored">
           <ul className="list-disc space-y-1 pl-5">
-            <li>The items above, your questionnaire answers (including the health-check answers and your age if you give it), your plan, and anything you log (pain scores, completed strength sessions, skipped sessions, race results).</li>
+            <li>The items above, any runs you enter by hand, your questionnaire answers (including the health-check answers and your age if you give it), your plan, and anything you log (pain scores, completed strength sessions, skipped sessions, race results).</li>
             <li>Your Strava access tokens, encrypted. If you use your own Strava API keys, the client secret is stored encrypted as well.</li>
             <li>A sign-in cookie on your device that lasts 30 days. There are no advertising or analytics cookies.</li>
           </ul>
-          <p className="mt-2">Data is kept in the site&apos;s storage on Netlify. To update open pages instantly, the site sends an empty &quot;something changed&quot; signal through Supabase Realtime on a random-looking channel; no name, Strava number or training data is sent there. Other runners cannot see your data. The person operating this site has administrative access to the hosting account and so can technically access stored data.</p>
+          <p className="mt-2">Data is kept in the site&apos;s storage on Netlify. To update open pages instantly, the site sends an empty &quot;something changed&quot; signal through Supabase Realtime on a random-looking channel; no name, Strava number or training data is sent there. Apart from sign-in, nothing else about you is held by Supabase. Other runners cannot see your data. The person operating this site has administrative access to the hosting account and so can technically access stored data.</p>
         </Panel>
         <Panel title="What it is used for">
           <p>Only to build and adjust your training plan and show your progress. It is not sold, not shared with other users, not used for advertising and not used to train AI models.</p>
         </Panel>
         <Panel title="Your choices">
           <ul className="list-disc space-y-1 pl-5">
-            <li><b>Download:</b> Settings Download my data.</li>
-            <li><b>Delete:</b> Settings Delete my account. This revokes RunBabyRun&apos;s access at Strava and deletes everything stored about you here.</li>
-            <li><b>Disconnect from Strava&apos;s side:</b> Strava Settings My Apps Revoke access. Syncing stops, and your Strava tokens and stored activities are removed from this site. Your answers, plan and logs stay until you use Delete my account.</li>
+            <li><b>Download:</b> Settings, then Download my data.</li>
+            <li><b>Delete:</b> Settings, then Delete my account. It asks for your password, then deletes your login and everything stored about you, and revokes RunBabyRun&apos;s access at Strava if it was connected.</li>
+            <li><b>Stop using Strava:</b> Settings, then Disconnect Strava. Runs imported from Strava are removed and you carry on by logging runs yourself.</li>
+            <li><b>Disconnect from Strava&apos;s side:</b> on Strava, open Settings, My Apps, Revoke access. Syncing stops, and your Strava tokens and stored activities are removed from this site. Your answers, plan and logs stay until you use Delete my account.</li>
           </ul>
           {contact && <p className="mt-2">Questions: <a className="underline" href={`mailto:${contact}`}>{contact}</a>.</p>}
         </Panel>

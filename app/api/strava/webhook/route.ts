@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { safeEqual } from "@/lib/crypto";
 import { loadAccount } from "@/lib/strava/oauth";
 import { publishChange } from "@/lib/live";
+import { uidForStrava } from "@/lib/users";
 import { accessRevoked, purgeStravaData, syncUser } from "@/lib/strava/sync";
 
 /**
@@ -26,7 +27,8 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   let ev: { object_type?: string; aspect_type?: string; owner_id?: number; updates?: Record<string, unknown> } = {};
   try { ev = await req.json(); } catch { /* ignore malformed bodies */ }
-  const uid = Number(ev.owner_id);
+  const athlete = Number(ev.owner_id);
+  const uid = Number.isSafeInteger(athlete) && athlete > 0 ? ((await uidForStrava(athlete).catch(() => null)) ?? 0) : 0;
   if (ev.object_type === "athlete" && String(ev.updates?.authorized) === "false" && Number.isSafeInteger(uid) && uid > 0) {
     try {
       const acc = await loadAccount(uid);

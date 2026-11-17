@@ -13,9 +13,9 @@ import { LiveRefresh } from "./_c/LiveRefresh";
 import { liveConfig, type LiveConfig } from "@/lib/live";
 import { currentUser } from "@/lib/session";
 import { getStore } from "@/lib/storage";
-import type { Account, Profile } from "@/lib/types";
+import type { Profile, User } from "@/lib/types";
 
-export const metadata: Metadata = { title: "RunBabyRun", description: "A race training plan built from your own Strava runs: 5K, 10K, half marathon or marathon." };
+export const metadata: Metadata = { title: "RunBabyRun", description: "A day-by-day race training plan for a 5K, 10K, half marathon or marathon. Track runs with Strava or by hand." };
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#101b3b" };
 
 async function who(): Promise<{ name: string; hasPlan: boolean; live: LiveConfig | null } | null> {
@@ -23,8 +23,8 @@ async function who(): Promise<{ name: string; hasPlan: boolean; live: LiveConfig
     const uid = await currentUser();
     if (!uid) return null;
     const store = await getStore();
-    const [acc, prof] = await Promise.all([store.get<Account>(String(uid), "account"), store.get<Profile>(String(uid), "profile")]);
-    return acc ? { name: acc.firstname, hasPlan: !!prof, live: await liveConfig(uid) } : null;
+    const [user, prof] = await Promise.all([store.get<User>(String(uid), "user"), store.get<Profile>(String(uid), "profile")]);
+    return user ? { name: user.name, hasPlan: !!prof, live: await liveConfig(uid) } : null;
   } catch {
     return null;
   }

@@ -66,3 +66,18 @@ re-renders from Netlify Blobs under the normal session check. This keeps runner 
 secret key or row-level-security policies, and a leaked topic lets a stranger trigger a reload and nothing else.
 Polling (45 s render, 5 min Strava check) stays as the fallback, so the app works unchanged if Supabase is down or
 not configured.
+
+### Accounts first, Strava optional
+
+A runner is a RunBabyRun account (email and password through Supabase Auth), not a Strava athlete. Every account has
+a random numeric id that owns its documents; two small indexes map the Supabase user and, when connected, the Strava
+athlete to it, and one Strava athlete can belong to only one account. After sign-up the runner picks a path:
+
+- **Strava:** as before. Runs sync, are matched by date and scored.
+- **By hand:** "Mark as done" stores a placeholder run at the planned distance, so the week strip, progress chart and
+  spike checks keep working; "Log this run" stores real distance, time and optional heart rate and gets the same
+  scoring as a Strava run from its summary. Manual logging is hidden while Strava is connected, to avoid double counting.
+
+Switching to manual removes Strava-imported runs (Strava's terms) and keeps hand-entered ones. Deleting the account
+asks for the password, which both confirms intent and yields the token needed to delete the Supabase login itself
+through `delete_own_account()`, so no Supabase secret key has to live on the site.

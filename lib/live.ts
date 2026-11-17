@@ -1,5 +1,6 @@
 import { sign } from "@/lib/crypto";
 import { getSecret } from "@/lib/session";
+import { supabaseEnv } from "@/lib/supabase";
 
 /**
  * Live updates through Supabase Realtime (Broadcast). Supabase carries only an empty "something changed" ping on a
@@ -9,10 +10,7 @@ import { getSecret } from "@/lib/session";
  */
 export interface LiveConfig { url: string; key: string; topic: string }
 
-const env = () => {
-  const url = process.env.SUPABASE_URL?.replace(/\/+$/, ""), key = process.env.SUPABASE_PUBLISHABLE_KEY;
-  return url && key && /^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(url) ? { url, key } : null;
-};
+const env = supabaseEnv;
 
 export async function liveTopic(uid: number): Promise<string> {
   return "rbr-" + sign(`live:${uid}`, await getSecret()).replace(/[^A-Za-z0-9]/g, "").slice(0, 40);

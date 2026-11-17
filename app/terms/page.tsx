@@ -19,7 +19,7 @@ export default function TermsPage() {
         <Panel title="Using the service">
           <ul className="list-disc space-y-1 pl-5">
             <li>You must be 18 or older.</li>
-            <li>You need your own Strava account and must follow Strava&apos;s terms. You connect it yourself and can disconnect at any time.</li>
+            <li>Strava is optional. If you connect it you need your own Strava account and must follow Strava&apos;s terms. You connect it yourself and can disconnect at any time.</li>
             <li>The service is provided free of charge, as is, with no guarantee of availability, accuracy or results. Plans and scores can be wrong; use your own judgement.</li>
             <li>To the extent the law allows, the operator is not liable for injury, loss or damage arising from use of the service.</li>
             <li>Access may be limited or withdrawn, for example if Strava&apos;s limits on connected athletes or requests are reached.</li>

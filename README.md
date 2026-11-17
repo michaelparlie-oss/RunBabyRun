@@ -9,11 +9,12 @@ Built with Next.js 16 (App Router), TypeScript and Tailwind 4. Deployed on Netli
 
 ## How a runner uses it
 
-1. **Connect with Strava** (read-only: `read`, `activity:read_all`).
-2. **Questionnaire.** Pre-filled from the last 120 days of Strava runs; every number can be corrected.
-3. **Plan.** Base, build, taper and race week, with paces and heart-rate ranges personal to the runner.
-4. **Train.** Today / Week / Plan / Progress. Runs sync from Strava when the app is opened.
-5. **Adjust.** Log pain, skip a session, enter a new race result, or rebuild the remaining weeks from recent training.
+1. **Create an account** with an email and password.
+2. **Choose a path:** connect Strava (read-only: `read`, `activity:read_all`) or log runs by hand. It can be changed later in Settings.
+3. **Questionnaire.** With Strava it is pre-filled from the last 120 days of runs; every number can be corrected.
+4. **Plan.** Base, build, taper and race week, with paces and heart-rate ranges personal to the runner.
+5. **Train.** Today / Week / Plan / Progress. Runs sync from Strava, or are ticked off or logged by hand.
+6. **Adjust.** Log pain, skip a session, enter a new race result, or rebuild the remaining weeks from recent training.
 
 How the plan is built, and which rules rest on research and which on coaching judgement, is documented in the app at `/about`
 and in `DECISIONS.md`.
@@ -63,6 +64,22 @@ curl -X POST https://www.strava.com/api/v3/push_subscriptions \
 Own-keys mode has no webhook (each runner's own application would need its own subscription); a revoked connection is
 detected at the next sync instead.
 
+### Accounts (Supabase Auth, required)
+
+Runners sign up with an email and password, then choose to connect Strava or to log runs by hand. Sign-in uses the
+same Supabase project as live updates (`SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`). The server calls Supabase Auth and
+then issues RunBabyRun's own session cookie; no Supabase token is kept and no secret key is needed.
+
+One-time setup in the Supabase dashboard, under Authentication:
+
+- **URL Configuration:** set Site URL to the site's address and add `https://YOUR-SITE/auth/callback` to Redirect URLs.
+  Confirmation and password-reset links land there.
+- **Email:** Supabase's built-in mailer only delivers to members of the Supabase organisation (about two messages an
+  hour). For a public site either add custom SMTP (Authentication, Emails, SMTP Settings), or turn off "Confirm email"
+  under Sign In / Providers, Email so sign-up works without a message. Password reset needs working email either way.
+- The migration `delete_own_account` (a database function that deletes only its caller) lets "Delete my account"
+  remove the login as well as the data.
+
 ### Live updates (Supabase Realtime, optional)
 
 Signed-in pages refresh themselves every 45 seconds and check Strava for new runs every 5 minutes while open. With a
@@ -98,12 +115,13 @@ npm run typecheck
 Strava only redirects to the callback domain registered for the API application, so for local sign-in set that domain to
 `localhost` on a development application.
 
-End-to-end check without Strava (uses a stand-in server):
+End-to-end check without Strava or Supabase (one stand-in server plays both; start from an empty `.data/`):
 
 ```bash
 npm run build
 python3 scripts/fake-strava.py 4010 &
 ALLOW_HTTP=1 STRAVA_API_BASE=http://127.0.0.1:4010/api/v3 STRAVA_OAUTH_BASE=http://127.0.0.1:4010/oauth \
+  SUPABASE_URL=http://127.0.0.1:4010 SUPABASE_PUBLISHABLE_KEY=test \
   STRAVA_CLIENT_ID=123 STRAVA_CLIENT_SECRET=sharedsecretsharedsecret12 npx next start -p 3111 &
 python3 scripts/smoke.py http://127.0.0.1:3111 $(date +%F)
 ```

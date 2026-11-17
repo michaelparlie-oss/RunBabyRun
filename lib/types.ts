@@ -121,7 +121,18 @@ export interface Plan {
   };
 }
 
+/** A RunBabyRun login. Runs come from Strava, from manual entry, or (before the runner has chosen) from nowhere yet. */
+export interface User {
+  uid: number;
+  email: string;
+  name: string;
+  source: "strava" | "manual" | null;
+  created_at: string;
+}
+
+/** The runner's Strava connection. Present only while Strava is connected. */
 export interface Account {
+  uid: number;
   athlete_id: number;
   firstname: string;
   lastname: string;
@@ -151,6 +162,8 @@ export interface ActSummary {
   avg_hr: number | null;
   max_hr: number | null;
   avg_speed: number | null;
+  /** Entered in RunBabyRun instead of coming from Strava: "logged" has real numbers, "ticked" assumes the planned distance. */
+  manual?: "logged" | "ticked";
 }
 
 export interface WellbeingEntry { date: string; area: string; pain: number; note: string }

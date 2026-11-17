@@ -8,9 +8,11 @@ import { publishChange } from "@/lib/live";
 import { loadCtx } from "@/lib/server/view";
 import { endSession, requireUser } from "@/lib/session";
 import { getStore } from "@/lib/storage";
-import { deauthorize } from "@/lib/strava/oauth";
-import { syncUser, type SyncResult } from "@/lib/strava/sync";
-import type { Plan, Profile } from "@/lib/types";
+import { deleteLogin, signIn } from "@/lib/auth";
+import { deauthorize, loadAccount } from "@/lib/strava/oauth";
+import { purgeStravaData, syncUser, type SyncResult } from "@/lib/strava/sync";
+import type { ActSummary, Plan, Profile } from "@/lib/types";
+import { loadUser, saveUser, uidForAuth, unlinkAuth, unlinkStrava } from "@/lib/users";
 import { diffDays, isDate, todayLocal } from "@/lib/util/dates";
 import { parseDuration } from "@/lib/util/format";
 
@@ -146,12 +148,90 @@ export async function updateMaxHr(_: ActionState, f: FormData): Promise<ActionSt
   return { ok: true, message: "Saved. Heart-rate ranges are updated." };
 }
 
-/** Revoke Strava access and delete everything stored for this runner. */
+/* ---------- Runs entered by hand ---------- */
+
+function manualAct(date: string, km: number, timeS: number, hr: number | null, kind: "logged" | "ticked"): ActSummary {
+  return {
+    id: -(Date.now() * 1000 + Math.floor(Math.random() * 1000)), name: kind === "logged" ? "Logged run" : "Marked as done", sport_type: "Run",
+    start_date_local: `${date}T07:00:00`, local_date: date, distance_m: Math.round(km * 1000), moving_time_s: Math.round(timeS), elapsed_time_s: Math.round(timeS),
+    avg_hr: hr, max_hr: null, avg_speed: timeS > 0 ? (km * 1000) / timeS : null, manual: kind,
+  };
+}
+async function saveActs(uid: number, acts: ActSummary[]) {
+  await (await getStore()).set(String(uid), "acts", [...acts].sort((a, b) => a.start_date_local.localeCompare(b.start_date_local)).slice(-600));
+  await changed(uid);
+}
+
+/** Log a run with real numbers. Replaces a same-day "marked as done" placeholder. */
+export async function logRun(_: ActionState, f: FormData): Promise<ActionState> {
+  const uid = await requireUser();
+  const c = await loadCtx(uid);
+  const date = str(f, "date");
+  const km = Number(str(f, "km").replace(",", "."));
+  const t = parseDuration(str(f, "time"));
+  const hrTxt = str(f, "hr"), hr = hrTxt ? Number(hrTxt) : null;
+  if (!isDate(date) || date > c.today || diffDays(date, c.today) > 120) return { ok: false, message: "Choose a date from the last four months, not in the future." };
+  if (!Number.isFinite(km) || km < 0.2 || km > 120) return { ok: false, message: "Enter the distance in kilometres, for example 6.5." };
+  if (!t || t / km < 150 || t / km > 1200) return { ok: false, message: "Enter the time as minutes:seconds or hours:minutes:seconds, for example 42:30." };
+  if (hr != null && (!Number.isInteger(hr) || hr < 60 || hr > 230)) return { ok: false, message: "Average heart rate should be between 60 and 230, or leave it empty." };
+  await saveActs(uid, [...c.acts.filter((a) => !(a.manual === "ticked" && a.local_date === date)), manualAct(date, km, t, hr, "logged")]);
+  return { ok: true, message: "Run logged." };
+}
+
+/** One-tap "done": counts the planned distance so the week, the progress chart and the safety checks still work. */
+export async function tickRun(f: FormData): Promise<void> {
+  const uid = await requireUser();
+  const c = await loadCtx(uid);
+  const s = c.sessions.find((x) => x.id === str(f, "id") && x.category === "run");
+  if (!s || s.date > c.today || c.actFor.has(s.id) || !s.distance_km) return;
+  await saveActs(uid, [...c.acts, manualAct(s.date, s.distance_km, (s.est_duration_min ?? s.distance_km * 7) * 60, null, "ticked")]);
+}
+
+export async function removeRun(f: FormData): Promise<void> {
+  const uid = await requireUser();
+  const id = Number(str(f, "id"));
+  const c = await loadCtx(uid);
+  if (!(id < 0) || !c.acts.some((a) => a.id === id && a.manual)) return;
+  await saveActs(uid, c.acts.filter((a) => a.id !== id));
+}
+
+/* ---------- Where runs come from ---------- */
+
+export async function chooseManual(): Promise<void> {
+  const uid = await requireUser();
+  const u = await loadUser(uid);
+  if (!u) redirect("/");
+  await saveUser({ ...u, source: "manual" });
+  await changed(uid);
+  redirect("/start");
+}
+
+/** Stop using Strava and log runs by hand. Runs already imported from Strava are removed, as Strava's terms ask. */
+export async function disconnectStrava(): Promise<void> {
+  const uid = await requireUser();
+  const u = await loadUser(uid);
+  if (!u) redirect("/");
+  await deauthorize(uid);
+  await purgeStravaData(uid);
+  await saveUser({ ...u, source: "manual" });
+  await changed(uid);
+  redirect("/settings?disconnected=1");
+}
+
+/** Delete everything: Strava access, stored data, and the login itself. The password confirms it is really the runner. */
 export async function deleteAccount(f: FormData): Promise<void> {
   const uid = await requireUser();
+  const u = await loadUser(uid);
+  if (!u) { await endSession(); redirect("/"); }
   if (str(f, "confirm").toUpperCase() !== "DELETE") redirect("/settings?error=confirm#delete");
+  const who = await signIn(u.email, String(f.get("password") ?? ""));
+  if (!who.ok || (await uidForAuth(who.value.user.id)) !== uid) redirect(`/settings?error=${who.ok || who.error === "invalid" ? "password" : "auth"}#delete`);
+  const acc = await loadAccount(uid);
   await deauthorize(uid);
+  if (acc) await unlinkStrava(acc.athlete_id, uid);
   await (await getStore()).delAll(String(uid));
+  await deleteLogin(who.value.token);
+  await unlinkAuth(who.value.user.id);
   await endSession();
   redirect("/?deleted=1");
 }
