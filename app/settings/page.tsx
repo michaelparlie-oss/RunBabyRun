@@ -23,7 +23,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const lastSync = c.account?.last_sync_at ? new Date(c.account.last_sync_at * 1000).toLocaleString("en-GB", { timeZone: p?.tz, day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "never";
   return (
     <>
-      <PageTitle title="Settings" sub={c.user ? `Signed in as ${c.user.email}` : undefined} />
+      <PageTitle title="Settings" sub={c.user ? `Logged in as ${c.user.email}` : undefined} actions={<form action="/api/logout" method="post"><button className="btn">Log out</button></form>} />
       {error === "rebuild" && <div className="mb-4"><Flash ok={false}>The plan could not be rebuilt, most likely because the race is now too close for a safe build-up. Change the race in the questionnaire.</Flash></div>}
       <div className="grid gap-4 lg:grid-cols-2">
         {c.account ? (
@@ -78,7 +78,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
             <a href="/api/export?format=csv" className="btn">Export runs (CSV)</a>
             <a href="/api/export?format=plan" className="btn">Export plan (CSV)</a>
             <a href="/api/export" className="btn">Everything (JSON)</a>
-            <form action="/api/logout" method="post"><button className="btn">Sign out</button></form>
+            
           </div>
           <p className="mt-3 text-xs text-muted">The CSV files open in Excel or Google Sheets. The JSON download has everything stored about you except your password and Strava tokens. See the <Link href="/privacy" className="underline">privacy page</Link>.</p>
         </Panel>

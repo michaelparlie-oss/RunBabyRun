@@ -62,6 +62,7 @@ export function Sidebar({ name }: { name: string }) {
         <div className="mx-5 my-3 border-t border-line-strong" />
         {extra.map((i) => <Item key={i.href} {...i} />)}
       </nav>
+      <form action="/api/logout" method="post" className="px-4 pb-3"><button className="btn w-full">Log out</button></form>
       <p className="px-5 pb-4 text-xs text-muted">Powered by Strava</p>
     </aside>
   );

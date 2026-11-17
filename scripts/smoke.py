@@ -100,7 +100,7 @@ ids = re.findall(r'href="/(session|strength)/([\w-]+)"', week); check("week list
 for kind, sid in ids[:6]:
     s, _, b = a.get(f"/{kind}/{sid}"); check(f"{kind} page {sid}", s == 200 and ("Skip this session" in b or "Mark as" in b or "How it went" in b or "Any pain" in b), b[:150])
     if kind == "session": check(f"no manual logging on a Strava account {sid}", "Did you do this run?" not in b)
-for p, needle in [("/week?w=5", "Week 5 of"), ("/progress", "Weekly distance"), ("/settings", "Delete my account"), ("/library", "Exercise library"), ("/about", "Sources")]:
+for p, needle in [("/week?w=5", "Week 5 of"), ("/progress", "Weekly distance"), ("/settings", "Log out"), ("/library", "Exercise library"), ("/about", "Sources")]:
     s, _, b = a.get(p); check(f"page {p}", s == 200 and needle in b)
 s, _, b = a.get("/session/nope"); check("unknown session is 404", s == 404)
 s, _, b = a.get("/api/export"); ex = json.loads(b)
